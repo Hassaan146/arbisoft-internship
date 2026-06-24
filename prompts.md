@@ -34,3 +34,6 @@ For each topic, explain in detail with conceptual and practical clarity:
 Keep the explanation beginner-friendly but not shallow. Assume I understand AI products, backend thinking, scalability, APIs, and product architecture, but I am still building frontend intuition.
 
 The goal is not to memorize syntax. The goal is to build enough frontend judgment to confidently direct, review, and debug AI-generated frontend code.
+
+I have to learn everything from the React docs to design me a plan. For each part of the plan, tell me where, provide me the link to the docs in the React docs, and what to learn on that page and what specific topic or topics I have to learn.
+
