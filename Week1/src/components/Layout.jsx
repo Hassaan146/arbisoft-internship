@@ -1,14 +1,12 @@
 import { Outlet, Link } from 'react-router-dom';
-import FlowerScene from './FlowerScene.jsx';
+import VideoBackground from './VideoBackground.jsx';
 import Navbar from './Navbar.jsx';
 
 export default function Layout() {
   return (
     <>
-      {/* Shared live 3D flower background — same scene as the landing page */}
-      <div className="scene-bg">
-        <FlowerScene auto />
-      </div>
+      {/* Shared cinematic background — the same flower clip as the landing */}
+      <VideoBackground />
       <div className="scene-overlay" />
 
       <div className="app-shell">

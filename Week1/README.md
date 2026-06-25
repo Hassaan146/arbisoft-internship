@@ -1,15 +1,16 @@
 # Veldara — Live 3D SPA
 
-A live, 3D single-page application. The landing page is a faithful recreation of
-the **Veldara** reference design, but the cinematic background is a real
-**Three.js** flower (via React Three Fiber) that blooms open and closed as you
-scroll. Every routed page floats **glassmorphic** panels over that same live 3D
-scene.
+A live single-page application that faithfully recreates the **Veldara**
+reference design. The landing page background is the exact cinematic flower clip,
+**scroll-scrubbed** frame-by-frame as you scroll (the flower blooms open and
+closed). Every routed page floats **glassmorphic** panels over that same flower
+clip, so the whole app shares one continuous background.
 
 ## Stack
 
 - **Vite** + **React 18** — fast SPA tooling
-- **React Three Fiber** + **Three.js** — the live 3D flower (`FlowerScene`)
+- **Scroll-scrubbed video** — canvas frame extraction with a live-seek fallback
+  (`Landing`), shared as a looping background (`VideoBackground`)
 - **React Router v6** — client-side routing with a shared layout
 - **ESLint (flat config)** + **Prettier** — linting & formatting
 - **Vitest** + **Testing Library** — unit tests
@@ -22,13 +23,13 @@ scene.
 | A form with client-side validation     | `src/components/ContactForm.jsx`                            |
 | ESLint + Prettier, clean lint pass     | `eslint.config.js`, `.prettierrc`                          |
 | 3+ unit tests for a component          | `src/components/ContactForm.test.jsx` (8 tests)            |
-| Live 3D + Glassmorphism design         | `FlowerScene.jsx` + `.glass` design system in `index.css`  |
+| Live background + Glassmorphism        | `VideoBackground.jsx` + `.glass` design system in `index.css` |
 
 ### Routes
 
-- `/` — Immersive scroll landing: the Veldara design with a live 3D flower
-  background (R3F), a drifting particle field, scroll-revealed cards, and a
-  final reveal — its own full-bleed layout
+- `/` — Immersive scroll landing: the exact Veldara design with the
+  scroll-scrubbed flower video, a drifting particle field, scroll-revealed
+  cards, and a final reveal — its own full-bleed layout
 - `/about` — How the project was made (glassmorphism)
 - `/reviews` — Website reviews (glassmorphism)
 - `/contact` — Contact form with client-side validation (glassmorphism)
@@ -56,12 +57,13 @@ npm run test:watch   # run tests in watch mode
 
 ## Design techniques
 
-- **Live 3D flower** — a procedural flower built in React Three Fiber: a petal
-  shape extruded and arranged in three rings that `lerp` between a bud and a
-  full bloom. Scroll-driven on the landing, gently auto-breathing behind the
-  routed pages, and frozen for `prefers-reduced-motion` / `?static=1`.
+- **Scroll-scrubbed flower video** — the exact reference clip, decoded into
+  frames (`createImageBitmap`) and drawn to a canvas at the frame matching scroll
+  position, with a live `currentTime`-seek fallback while frames decode. The same
+  clip loops gently behind the glass pages (`VideoBackground`), paused for
+  `prefers-reduced-motion`.
 - **Glassmorphism** — translucent, blurred `.glass` panels (navbar, cards,
-  forms, footer) reveal the shared live 3D scene behind every routed page.
+  forms, footer) reveal the shared flower background behind every routed page.
 - **Scroll choreography** — the landing reproduces the reference experience:
   particle field, hero fade, mask-wipe card reveal, and an `IntersectionObserver`
   reveal.

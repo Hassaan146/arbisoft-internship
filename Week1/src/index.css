@@ -66,11 +66,20 @@ h3 {
   font-weight: 700;
 }
 
-/* ---------- Live 3D background ---------- */
+/* ---------- Shared cinematic background ---------- */
 .scene-bg {
   position: fixed;
   inset: 0;
   z-index: -2;
+  background: #050608;
+}
+
+.scene-bg .bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .scene-overlay {
@@ -78,28 +87,13 @@ h3 {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background:
-    radial-gradient(
-      1100px 520px at 50% 112%,
-      rgba(var(--accent-rgb), 0.32),
-      transparent 62%
-    ),
-    radial-gradient(
-      620px 320px at 50% 96%,
-      rgba(255, 138, 91, 0.22),
-      transparent 60%
-    ),
-    radial-gradient(
-      900px 520px at 8% 4%,
-      rgba(var(--accent-2-rgb), 0.1),
-      transparent 55%
-    ),
-    linear-gradient(
-      180deg,
-      rgba(3, 7, 15, 0.55),
-      rgba(3, 7, 15, 0.12) 45%,
-      rgba(3, 7, 15, 0.55)
-    );
+  /* Dark scrim so glass cards and text stay legible over the video */
+  background: linear-gradient(
+    180deg,
+    rgba(5, 6, 8, 0.62),
+    rgba(5, 6, 8, 0.4) 45%,
+    rgba(5, 6, 8, 0.72)
+  );
 }
 
 /* ---------- Shell ---------- */
