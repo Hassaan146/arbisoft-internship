@@ -1,143 +1,185 @@
 import { Suspense, useMemo, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import {
-  Float,
-  Stars,
-  Icosahedron,
-  MeshDistortMaterial,
-} from '@react-three/drei';
+import { Stars } from '@react-three/drei';
 import * as THREE from 'three';
 
-/**
- * A slowly morphing, self-rotating crystal that anchors the scene.
- */
-function Crystal({ position, color, scale = 1, speed = 0.4 }) {
-  const ref = useRef();
+// Honour the user's motion preference — the sea freezes if they've asked for
+// reduced motion (a11y: prefers-reduced-motion).
+const prefersReducedMotion =
+  typeof window !== 'undefined' &&
+  window.matchMedia &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  useFrame((_, delta) => {
-    if (!ref.current) return;
-    ref.current.rotation.x += delta * speed * 0.5;
-    ref.current.rotation.y += delta * speed;
-  });
+// `?static=1` renders a single frame (used for visual snapshots/tests).
+const staticMode =
+  typeof window !== 'undefined' &&
+  new URLSearchParams(window.location.search).has('static');
 
-  return (
-    <Float speed={1.4} rotationIntensity={0.6} floatIntensity={1.2}>
-      <Icosahedron ref={ref} args={[1, 4]} position={position} scale={scale}>
-        <MeshDistortMaterial
-          color={color}
-          roughness={0.15}
-          metalness={0.6}
-          distort={0.35}
-          speed={1.6}
-          transparent
-          opacity={0.92}
-        />
-      </Icosahedron>
-    </Float>
-  );
-}
+// Stop the continuous render loop entirely when motion isn't wanted.
+const frozen = prefersReducedMotion || staticMode;
 
 /**
- * A drifting cloud of points — the "data dust" of the analytics nebula.
+ * A flowing sea — a dense plane whose vertices ripple with summed sine waves,
+ * so the surface rolls in waves every frame.
  */
-function DataDust({ count = 900 }) {
-  const ref = useRef();
+function Ocean() {
+  const geomRef = useRef();
+  const frame = useRef(0);
 
-  const positions = useMemo(() => {
-    const arr = new Float32Array(count * 3);
-    for (let i = 0; i < count; i += 1) {
-      arr[i * 3] = (Math.random() - 0.5) * 22;
-      arr[i * 3 + 1] = (Math.random() - 0.5) * 14;
-      arr[i * 3 + 2] = (Math.random() - 0.5) * 14;
+  // Displace the height (local z, which becomes vertical once the plane is laid
+  // flat) of every vertex using a few overlapping waves of different speeds.
+  // We write the typed array directly (no per-vertex accessor calls) to keep
+  // each frame well under the 16ms budget.
+  const ripple = (geo, t, withNormals) => {
+    const arr = geo.attributes.position.array;
+    for (let i = 0; i < arr.length; i += 3) {
+      const x = arr[i];
+      const y = arr[i + 1];
+      arr[i + 2] =
+        Math.sin(x * 0.5 + t * 1.1) * 0.42 +
+        Math.sin(y * 0.7 + t * 0.85) * 0.3 +
+        Math.sin((x + y) * 0.35 + t * 0.6) * 0.22 +
+        Math.cos(x * 0.9 - y * 0.4 + t * 1.4) * 0.12;
     }
-    return arr;
-  }, [count]);
+    geo.attributes.position.needsUpdate = true;
+    // Normal recompute is the costly step — only do it every other frame.
+    if (withNormals) geo.computeVertexNormals();
+  };
 
   useFrame((state) => {
-    if (!ref.current) return;
-    ref.current.rotation.y = state.clock.elapsedTime * 0.02;
+    const geo = geomRef.current;
+    if (!geo || frozen) return;
+    frame.current += 1;
+    ripple(geo, state.clock.elapsedTime, frame.current % 3 === 0);
   });
 
+  // Seed one frame of waves so a reduced-motion sea still looks like water.
+  const onReady = (geo) => {
+    geomRef.current = geo;
+    if (geo) ripple(geo, 0, true);
+  };
+
   return (
-    <points ref={ref}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={count}
-          array={positions}
-          itemSize={3}
-        />
-      </bufferGeometry>
-      <pointsMaterial
-        size={0.035}
-        color="#9ad9ff"
-        transparent
-        opacity={0.7}
-        sizeAttenuation
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.6, 0]}>
+      <planeGeometry ref={onReady} args={[60, 60, 40, 40]} />
+      <meshStandardMaterial
+        color="#06283d"
+        roughness={0.18}
+        metalness={0.55}
+        emissive="#04141f"
+        emissiveIntensity={0.4}
+        side={THREE.DoubleSide}
       />
-    </points>
+    </mesh>
   );
 }
 
 /**
- * Gentle parallax: the whole rig leans toward the pointer.
+ * The rising red light — a glowing sun low on the horizon that slowly lifts,
+ * casting warm light across the wave crests.
+ */
+function RisingSun() {
+  const group = useRef();
+  const light = useRef();
+
+  useFrame((state) => {
+    if (!group.current) return;
+    const t = frozen ? 0 : state.clock.elapsedTime;
+    // Gentle rise + a subtle breathing glow.
+    const y = 0.6 + (Math.sin(t * 0.12) * 0.5 + 0.5) * 2.4;
+    group.current.position.y = y;
+    if (light.current) {
+      light.current.position.y = y;
+      light.current.intensity = 180 + Math.sin(t * 0.8) * 30;
+    }
+  });
+
+  return (
+    <group>
+      <group ref={group} position={[0, 1, -22]}>
+        {/* core */}
+        <mesh>
+          <sphereGeometry args={[3, 32, 32]} />
+          <meshBasicMaterial color="#ff5538" toneMapped={false} />
+        </mesh>
+        {/* halo */}
+        <mesh>
+          <sphereGeometry args={[4.6, 24, 24]} />
+          <meshBasicMaterial
+            color="#ff3b2f"
+            transparent
+            opacity={0.28}
+            blending={THREE.AdditiveBlending}
+            depthWrite={false}
+            toneMapped={false}
+          />
+        </mesh>
+      </group>
+      <pointLight
+        ref={light}
+        position={[0, 1, -18]}
+        color="#ff5a3c"
+        intensity={180}
+        distance={70}
+        decay={1.2}
+      />
+    </group>
+  );
+}
+
+/**
+ * The whole rig leans subtly toward the pointer for parallax depth.
  */
 function ParallaxRig({ children }) {
   const group = useRef();
 
   useFrame((state) => {
-    if (!group.current) return;
-    const x = state.pointer.x * 0.4;
-    const y = state.pointer.y * 0.25;
-    group.current.rotation.y += (x - group.current.rotation.y) * 0.04;
-    group.current.rotation.x += (-y - group.current.rotation.x) * 0.04;
+    if (!group.current || frozen) return;
+    const x = state.pointer.x * 0.15;
+    const y = state.pointer.y * 0.08;
+    group.current.rotation.y += (x - group.current.rotation.y) * 0.03;
+    group.current.rotation.x += (-y - group.current.rotation.x) * 0.03;
   });
 
   return <group ref={group}>{children}</group>;
 }
 
 export default function Scene3D() {
+  // Build the night-sky colour once.
+  const skyColor = useMemo(() => new THREE.Color('#03070f'), []);
+
   return (
     <div className="scene-bg" aria-hidden="true">
       <Canvas
-        camera={{ position: [0, 0, 8], fov: 55 }}
-        dpr={[1, 1.8]}
-        gl={{ antialias: true, alpha: true }}
+        frameloop={frozen ? 'demand' : 'always'}
+        camera={{ position: [0, 2.4, 10], fov: 60 }}
+        dpr={[1, 1.4]}
+        gl={{
+          antialias: true,
+          alpha: true,
+          powerPreference: 'high-performance',
+        }}
       >
-        <color attach="background" args={['#05060f']} />
-        <fog attach="fog" args={['#05060f', 9, 22]} />
+        <color attach="background" args={[skyColor]} />
+        <fog attach="fog" args={['#04101b', 14, 46]} />
 
-        <ambientLight intensity={0.4} />
-        <pointLight position={[6, 6, 6]} intensity={120} color="#7c5cff" />
-        <pointLight position={[-8, -4, 2]} intensity={90} color="#19e3c9" />
+        {/* cool sky fill + warm key from the sun */}
+        <hemisphereLight args={['#1b4a63', '#020912', 0.55]} intensity={0.6} />
+        <ambientLight intensity={0.2} />
 
         <Suspense fallback={null}>
+          <RisingSun />
           <ParallaxRig>
-            <Crystal position={[2.6, 0.4, 0]} color="#7c5cff" scale={1.7} />
-            <Crystal
-              position={[-3, -1, -2]}
-              color="#19e3c9"
-              scale={1}
-              speed={0.6}
-            />
-            <Crystal
-              position={[-1.4, 2, -3]}
-              color="#ff5da2"
-              scale={0.6}
-              speed={0.8}
-            />
-            <DataDust />
+            <Ocean />
           </ParallaxRig>
           <Stars
-            radius={60}
-            depth={40}
-            count={2500}
+            radius={80}
+            depth={50}
+            count={700}
             factor={3}
             saturation={0}
             fade
-            speed={0.6}
+            speed={prefersReducedMotion ? 0 : 0.4}
           />
         </Suspense>
       </Canvas>

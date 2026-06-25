@@ -1,21 +1,23 @@
 :root {
-  /* Palette — deep space indigo with electric accents */
-  --bg-0: #05060f;
-  --bg-1: #0a0a1f;
-  --ink: #eef1ff;
-  --ink-dim: #aab0d6;
-  --ink-faint: #6e76a8;
+  /* Palette — deep ocean at night with a rising red sun */
+  --bg-0: #03070f;
+  --bg-1: #061421;
+  --ink: #eaf2f8;
+  --ink-dim: #9fb3c4;
+  --ink-faint: #5f7488;
 
-  --accent: #7c5cff; /* violet */
-  --accent-2: #19e3c9; /* aqua */
-  --accent-3: #ff5da2; /* magenta */
+  --accent: #ff4d4d; /* crimson — the rising red light */
+  --accent-rgb: 255, 77, 77;
+  --accent-2: #2dd4bf; /* ocean teal */
+  --accent-2-rgb: 45, 212, 191;
+  --accent-3: #ff8a5b; /* sunrise coral */
 
   /* Glass */
-  --glass-bg: rgba(20, 22, 48, 0.45);
-  --glass-bg-strong: rgba(24, 26, 58, 0.62);
+  --glass-bg: rgba(10, 24, 38, 0.45);
+  --glass-bg-strong: rgba(12, 28, 44, 0.64);
   --glass-border: rgba(255, 255, 255, 0.12);
   --glass-highlight: rgba(255, 255, 255, 0.22);
-  --glass-shadow: 0 8px 40px rgba(0, 0, 0, 0.45);
+  --glass-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
   --glass-blur: 18px;
 
   --radius: 20px;
@@ -78,16 +80,26 @@ h3 {
   pointer-events: none;
   background:
     radial-gradient(
-      1200px 600px at 70% -10%,
-      rgba(124, 92, 255, 0.18),
+      1100px 520px at 50% 112%,
+      rgba(var(--accent-rgb), 0.32),
+      transparent 62%
+    ),
+    radial-gradient(
+      620px 320px at 50% 96%,
+      rgba(255, 138, 91, 0.22),
       transparent 60%
     ),
     radial-gradient(
-      900px 500px at 0% 100%,
-      rgba(25, 227, 201, 0.12),
+      900px 520px at 8% 4%,
+      rgba(var(--accent-2-rgb), 0.1),
       transparent 55%
     ),
-    linear-gradient(180deg, rgba(5, 6, 15, 0.2), rgba(5, 6, 15, 0.75));
+    linear-gradient(
+      180deg,
+      rgba(3, 7, 15, 0.55),
+      rgba(3, 7, 15, 0.12) 45%,
+      rgba(3, 7, 15, 0.55)
+    );
 }
 
 /* ---------- Shell ---------- */
@@ -127,7 +139,7 @@ h3 {
     var(--glass-highlight),
     transparent 40%,
     transparent 60%,
-    rgba(124, 92, 255, 0.25)
+    rgba(var(--accent-rgb), 0.25)
   );
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
@@ -175,7 +187,7 @@ h3 {
     var(--accent-3),
     var(--accent)
   );
-  box-shadow: 0 0 18px rgba(124, 92, 255, 0.7);
+  box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.7);
 }
 
 .nav-links {
@@ -201,7 +213,7 @@ h3 {
 
 .nav-links a.active {
   color: var(--ink);
-  background: rgba(124, 92, 255, 0.22);
+  background: rgba(var(--accent-rgb), 0.22);
 }
 
 /* ---------- Buttons ---------- */
@@ -227,13 +239,13 @@ h3 {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent), #5b3cff);
+  background: linear-gradient(135deg, var(--accent), #c81e1e);
   color: white;
-  box-shadow: 0 8px 24px rgba(124, 92, 255, 0.45);
+  box-shadow: 0 8px 24px rgba(var(--accent-rgb), 0.45);
 }
 
 .btn-primary:hover {
-  box-shadow: 0 10px 30px rgba(124, 92, 255, 0.6);
+  box-shadow: 0 10px 30px rgba(var(--accent-rgb), 0.6);
 }
 
 .btn-ghost {
@@ -334,7 +346,7 @@ h3 {
 .metric .num {
   font-size: 2rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #fff, var(--accent-2));
+  background: linear-gradient(135deg, #fff, var(--accent-3));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -365,7 +377,7 @@ h3 {
   place-items: center;
   font-size: 1.3rem;
   margin-bottom: 16px;
-  background: rgba(124, 92, 255, 0.18);
+  background: rgba(var(--accent-rgb), 0.18);
   border: 1px solid var(--glass-border);
 }
 
@@ -410,7 +422,11 @@ h3 {
 .bars .bar {
   flex: 1;
   border-radius: 8px 8px 4px 4px;
-  background: linear-gradient(180deg, var(--accent-2), rgba(124, 92, 255, 0.7));
+  background: linear-gradient(
+    180deg,
+    var(--accent-2),
+    rgba(var(--accent-rgb), 0.7)
+  );
   position: relative;
   min-height: 8px;
   transition: filter 0.2s ease;
@@ -570,7 +586,7 @@ h3 {
 .field select:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.25);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.25);
 }
 
 .field textarea {
@@ -631,7 +647,7 @@ h3 {
   border-radius: 12px;
   display: grid;
   place-items: center;
-  background: rgba(124, 92, 255, 0.18);
+  background: rgba(var(--accent-rgb), 0.18);
   border: 1px solid var(--glass-border);
 }
 
