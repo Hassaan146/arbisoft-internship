@@ -2,8 +2,8 @@ import { NavLink, Link } from 'react-router-dom';
 
 const links = [
   { to: '/', label: 'Home', end: true },
-  { to: '/dashboard', label: 'Dashboard' },
-  { to: '/pricing', label: 'Pricing' },
+  { to: '/about', label: 'About' },
+  { to: '/reviews', label: 'Reviews' },
   { to: '/contact', label: 'Contact' },
 ];
 
@@ -13,7 +13,7 @@ export default function Navbar() {
       <div className="navbar-inner glass">
         <Link to="/" className="brand">
           <span className="brand-dot" />
-          Nebula
+          Veldara
         </Link>
         <div className="nav-links">
           {links.map((l) => (

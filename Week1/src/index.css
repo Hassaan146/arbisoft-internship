@@ -1,20 +1,20 @@
 :root {
-  /* Palette — deep ocean at night with a rising red sun */
-  --bg-0: #03070f;
-  --bg-1: #061421;
-  --ink: #eaf2f8;
-  --ink-dim: #9fb3c4;
-  --ink-faint: #5f7488;
+  /* Palette — Veldara: near-black with a calm steel-blue accent */
+  --bg-0: #050608;
+  --bg-1: #0a0f16;
+  --ink: #eef3f8;
+  --ink-dim: #aebccb;
+  --ink-faint: #6b7a8b;
 
-  --accent: #ff4d4d; /* crimson — the rising red light */
-  --accent-rgb: 255, 77, 77;
-  --accent-2: #2dd4bf; /* ocean teal */
-  --accent-2-rgb: 45, 212, 191;
-  --accent-3: #ff8a5b; /* sunrise coral */
+  --accent: #3a7aad; /* Veldara blue */
+  --accent-rgb: 58, 122, 173;
+  --accent-2: #8cc0ea; /* light sky blue */
+  --accent-2-rgb: 140, 192, 234;
+  --accent-3: #2c5c88; /* deep Veldara blue */
 
   /* Glass */
-  --glass-bg: rgba(10, 24, 38, 0.45);
-  --glass-bg-strong: rgba(12, 28, 44, 0.64);
+  --glass-bg: rgba(14, 22, 34, 0.45);
+  --glass-bg-strong: rgba(16, 26, 40, 0.64);
   --glass-border: rgba(255, 255, 255, 0.12);
   --glass-highlight: rgba(255, 255, 255, 0.22);
   --glass-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
@@ -239,7 +239,7 @@ h3 {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent), #c81e1e);
+  background: linear-gradient(135deg, var(--accent), #1e4a72);
   color: white;
   box-shadow: 0 8px 24px rgba(var(--accent-rgb), 0.45);
 }
@@ -705,4 +705,81 @@ h3 {
   .nav-links {
     display: none;
   }
+}
+
+/* ---------- Reviews ---------- */
+.review {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.review .stars {
+  color: var(--accent-2);
+  font-size: 1.05rem;
+  letter-spacing: 2px;
+}
+
+.review .stars-empty {
+  color: rgba(255, 255, 255, 0.18);
+}
+
+.review-quote {
+  color: var(--ink-dim);
+  font-size: 0.96rem;
+  line-height: 1.6;
+  flex: 1;
+}
+
+.review-who {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.review-who strong {
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.review-who .muted {
+  font-size: 0.82rem;
+}
+
+/* ---------- About build steps ---------- */
+.build-steps {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  counter-reset: step;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.build-steps li {
+  position: relative;
+  counter-increment: step;
+  padding-left: 46px;
+  color: var(--ink-dim);
+  line-height: 1.6;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.build-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: var(--ink);
+  background: rgba(var(--accent-rgb), 0.22);
+  border: 1px solid var(--glass-border);
 }

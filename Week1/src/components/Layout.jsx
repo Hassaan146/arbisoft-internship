@@ -1,12 +1,14 @@
 import { Outlet, Link } from 'react-router-dom';
-import Scene3D from './Scene3D.jsx';
+import FlowerScene from './FlowerScene.jsx';
 import Navbar from './Navbar.jsx';
 
 export default function Layout() {
   return (
     <>
-      {/* Shared live 3D background — persists across every route */}
-      <Scene3D />
+      {/* Shared live 3D flower background — same scene as the landing page */}
+      <div className="scene-bg">
+        <FlowerScene auto />
+      </div>
       <div className="scene-overlay" />
 
       <div className="app-shell">
@@ -19,11 +21,11 @@ export default function Layout() {
             <div className="footer-inner glass">
               <Link to="/" className="brand">
                 <span className="brand-dot" />
-                Nebula
+                Veldara
               </Link>
               <p className="muted">
-                © {new Date().getFullYear()} Nebula Analytics — Insight at the
-                speed of thought.
+                © {new Date().getFullYear()} Veldara — Craft immersive 3D worlds
+                on the web.
               </p>
             </div>
           </div>

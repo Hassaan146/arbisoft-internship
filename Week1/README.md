@@ -1,35 +1,37 @@
-# Nebula — AI Data Analytics SPA
+# Veldara — Live 3D SPA
 
-A live, 3D single-page application for an AI data-analytics SaaS, built with
-**React**, **React Router**, and **Three.js** (via React Three Fiber). The
-landing page sits in front of a continuously animated 3D nebula, and every other
-page floats **glassmorphic** panels over that same live background.
+A live, 3D single-page application. The landing page is a faithful recreation of
+the **Veldara** reference design, but the cinematic background is a real
+**Three.js** flower (via React Three Fiber) that blooms open and closed as you
+scroll. Every routed page floats **glassmorphic** panels over that same live 3D
+scene.
 
 ## Stack
 
 - **Vite** + **React 18** — fast SPA tooling
-- **React Three Fiber** + **drei** — the live 3D background (`Scene3D`)
+- **React Three Fiber** + **Three.js** — the live 3D flower (`FlowerScene`)
 - **React Router v6** — client-side routing with a shared layout
 - **ESLint (flat config)** + **Prettier** — linting & formatting
 - **Vitest** + **Testing Library** — unit tests
 
 ## Requirements covered
 
-| Requirement                                   | Where                                                        |
-| --------------------------------------------- | ----------------------------------------------------------- |
-| SPA with 3+ routes and a shared layout        | `src/App.jsx`, `src/components/Layout.jsx` (4 routes + 404) |
-| A form with client-side validation            | `src/components/ContactForm.jsx`                            |
-| ESLint + Prettier, clean lint pass            | `eslint.config.js`, `.prettierrc`                          |
-| 3+ unit tests for a component                 | `src/components/ContactForm.test.jsx` (9 tests)            |
-| Live 3D + Glassmorphism design                | `Scene3D.jsx` + `.glass` design system in `index.css`     |
+| Requirement                            | Where                                                       |
+| -------------------------------------- | ----------------------------------------------------------- |
+| SPA with 3+ routes and a shared layout | `src/App.jsx`, `src/components/Layout.jsx`                  |
+| A form with client-side validation     | `src/components/ContactForm.jsx`                            |
+| ESLint + Prettier, clean lint pass     | `eslint.config.js`, `.prettierrc`                          |
+| 3+ unit tests for a component          | `src/components/ContactForm.test.jsx` (8 tests)            |
+| Live 3D + Glassmorphism design         | `FlowerScene.jsx` + `.glass` design system in `index.css`  |
 
 ### Routes
 
-- `/` — Immersive scroll-video landing (scroll-scrubbed cinematic background,
-  drifting particle field, scroll-revealed cards) in its own full-bleed layout
-- `/dashboard` — Glassmorphic analytics overview
-- `/pricing` — Glassmorphic pricing tiers
-- `/contact` — Glassmorphic contact form with validation
+- `/` — Immersive scroll landing: the Veldara design with a live 3D flower
+  background (R3F), a drifting particle field, scroll-revealed cards, and a
+  final reveal — its own full-bleed layout
+- `/about` — How the project was made (glassmorphism)
+- `/reviews` — Website reviews (glassmorphism)
+- `/contact` — Contact form with client-side validation (glassmorphism)
 - `*` — 404 fallback
 
 ## Getting started
@@ -54,8 +56,12 @@ npm run test:watch   # run tests in watch mode
 
 ## Design techniques
 
+- **Live 3D flower** — a procedural flower built in React Three Fiber: a petal
+  shape extruded and arranged in three rings that `lerp` between a bud and a
+  full bloom. Scroll-driven on the landing, gently auto-breathing behind the
+  routed pages, and frozen for `prefers-reduced-motion` / `?static=1`.
 - **Glassmorphism** — translucent, blurred `.glass` panels (navbar, cards,
-  forms, footer) reveal the shared live 3D background behind every page.
-- **Live 3D** — morphing icosahedron "crystals", an additive-blended particle
-  field, drifting stars, and pointer parallax, all rendered with React Three
-  Fiber and persisted across route changes.
+  forms, footer) reveal the shared live 3D scene behind every routed page.
+- **Scroll choreography** — the landing reproduces the reference experience:
+  particle field, hero fade, mask-wipe card reveal, and an `IntersectionObserver`
+  reveal.
