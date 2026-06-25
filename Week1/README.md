@@ -25,7 +25,8 @@ page floats **glassmorphic** panels over that same live background.
 
 ### Routes
 
-- `/` — Landing page (hero, metrics, feature grid)
+- `/` — Immersive scroll-video landing (scroll-scrubbed cinematic background,
+  drifting particle field, scroll-revealed cards) in its own full-bleed layout
 - `/dashboard` — Glassmorphic analytics overview
 - `/pricing` — Glassmorphic pricing tiers
 - `/contact` — Glassmorphic contact form with validation
