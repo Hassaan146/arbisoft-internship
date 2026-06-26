@@ -13,7 +13,9 @@ export const VIDEO_URL = '/flower.mp4';
  *   - retries play() on a few timers and on the media-ready events,
  *   - resumes when the tab becomes visible again,
  *   - falls back to the user's first interaction if autoplay is blocked.
- * Honours prefers-reduced-motion by leaving the video paused.
+ *
+ * The video plays for everyone (including prefers-reduced-motion users): it is
+ * the core requested experience, and is silent and non-interactive.
  *
  * Returns a cleanup function.
  */

@@ -1,5 +1,5 @@
 import { PageHead, FeatureCard, GlassCard } from '../components/ui/index.js';
-import { stack, steps } from '../data/about.js';
+import { stack, steps } from '../data/index.js';
 
 export default function About() {
   return (

@@ -1,5 +1,5 @@
 import { PageHead, GlassCard, Stars } from '../components/ui/index.js';
-import { reviews } from '../data/reviews.js';
+import { reviews } from '../data/index.js';
 
 export default function Reviews() {
   return (

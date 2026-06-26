@@ -1,5 +1,5 @@
 import ContactForm from '../components/ContactForm.jsx';
-import { contactPoints } from '../data/contactPoints.js';
+import { contactPoints } from '../data/index.js';
 
 export default function Contact() {
   return (

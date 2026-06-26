@@ -33,8 +33,6 @@ export default [
         'warn',
         { allowConstantExport: true },
       ],
-      // R3F uses unknown-to-eslint intrinsic elements and props on <mesh>, etc.
-      'react/no-unknown-property': 'off',
     },
   },
   {

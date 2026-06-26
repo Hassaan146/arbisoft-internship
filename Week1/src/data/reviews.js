@@ -17,7 +17,7 @@ export const reviews = [
   },
   {
     quote:
-      'Performance was my worry with WebGL, but Veldara stays smooth even on mid-range laptops. The reduced-motion fallback is a thoughtful touch.',
+      'Performance was my worry with WebGL, but Veldara stays smooth even on mid-range laptops. The glassmorphic, keyboard-friendly UI is a thoughtful touch.',
     name: 'Priya Nair',
     role: 'Accessibility Consultant',
     stars: 4,

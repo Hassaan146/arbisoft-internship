@@ -494,4 +494,3 @@ I want you to review the code. There should be two agents first. What should be 
 2. Review the architecture of my code and improve the architecture, because I am giving this code to an industry specialist, so he should think that I am a professional. Keep in mind the architecture, then review the code, each and every thing.
 These are the things you must do, and then provide me the report, and then I'll tell you what the next thing
  use the token optimization skill you have so that you should use less tokens.
-add this prompt too to the prompts.md file

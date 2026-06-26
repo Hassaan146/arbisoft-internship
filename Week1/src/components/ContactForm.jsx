@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { validate, initialContact } from '../utils/contactValidation.js';
 
+/**
+ * Contact form with client-only validation. Calls the optional `onSubmitted`
+ * callback with the values once they pass validation.
+ */
 export default function ContactForm({ onSubmitted }) {
   const [values, setValues] = useState(initialContact);
   const [errors, setErrors] = useState({});

@@ -7,6 +7,7 @@ const links = [
   { to: '/contact', label: 'Contact' },
 ];
 
+/** Glass top-navigation shared by the routed pages; highlights the active route. */
 export default function Navbar() {
   return (
     <nav className="navbar">

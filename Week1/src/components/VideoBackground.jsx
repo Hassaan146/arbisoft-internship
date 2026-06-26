@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { VIDEO_URL } from '../videoSource.js';
-import { useAutoplayVideo } from '../hooks/useAutoplayVideo.js';
+import { useAutoplayVideo } from '../hooks/index.js';
 
 /**
  * The cinematic flower clip, autoplaying on a loop behind the glass pages so the

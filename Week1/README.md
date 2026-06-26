@@ -19,10 +19,10 @@ moving background.
 
 | Requirement                            | Where                                                       |
 | -------------------------------------- | ----------------------------------------------------------- |
-| SPA with 3+ routes and a shared layout | `src/App.jsx`, `src/components/Layout.jsx`                  |
+| SPA with 3+ routes and a shared layout | `src/App.jsx`, `src/components/layout/Layout.jsx`           |
 | A form with client-side validation     | `src/components/ContactForm.jsx`                            |
 | ESLint + Prettier, clean lint pass     | `eslint.config.js`, `.prettierrc`                          |
-| 3+ unit tests for a component          | `src/components/ContactForm.test.jsx` (8 tests)            |
+| 3+ unit tests                          | 17 tests across `ContactForm`, `ui`, `pages`, `App` suites |
 | Live background + Glassmorphism        | `VideoBackground.jsx` + `.glass` design system in `index.css` |
 
 ### Routes
@@ -34,6 +34,23 @@ moving background.
 - `/reviews` — Website reviews (glassmorphism)
 - `/contact` — Contact form with client-side validation (glassmorphism)
 - `*` — 404 fallback
+
+## Project structure
+
+```
+src/
+  components/  layout/  (Layout, Navbar)
+               ui/      (GlassCard, PageHead, FeatureCard, Stars, SocialLinks)
+               VideoBackground.jsx  ContactForm.jsx  ErrorBoundary.jsx
+  hooks/       useAutoplayVideo  useParticles  useHeroFade
+               useCardScrollMask  useScrollReveal
+  data/        about  reviews  contactPoints  landingCards
+  pages/       Landing (+ Landing.css)  About  Reviews  Contact  NotFound
+  utils/       contactValidation.js
+  videoSource.js   index.css   App.jsx   main.jsx
+```
+
+See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for a full conceptual walkthrough.
 
 ## Getting started
 
@@ -59,9 +76,9 @@ npm run test:watch   # run tests in watch mode
 
 - **Autoplaying flower video** — the exact reference clip, force-muted and
   looped, plays continuously as the background on every page. A robust autoplay
-  helper retries on media-ready events and falls back to the user's first
-  interaction if a browser blocks muted autoplay; paused for
-  `prefers-reduced-motion`.
+  helper retries on media-ready events, resumes when the tab becomes visible,
+  and falls back to the user's first interaction if a browser blocks muted
+  autoplay.
 - **Glassmorphism** — translucent, blurred `.glass` panels (navbar, cards,
   forms, footer) reveal the shared flower background behind every routed page.
 - **Scroll choreography** — the landing reproduces the reference experience:

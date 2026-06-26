@@ -7,12 +7,14 @@ import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { VIDEO_URL } from '../videoSource.js';
 import { SocialLinks } from '../components/ui/index.js';
-import { landingCards } from '../data/landingCards.js';
-import { useAutoplayVideo } from '../hooks/useAutoplayVideo.js';
-import { useParticles } from '../hooks/useParticles.js';
-import { useHeroFade } from '../hooks/useHeroFade.js';
-import { useCardScrollMask } from '../hooks/useCardScrollMask.js';
-import { useScrollReveal } from '../hooks/useScrollReveal.js';
+import { landingCards } from '../data/index.js';
+import {
+  useAutoplayVideo,
+  useParticles,
+  useHeroFade,
+  useCardScrollMask,
+  useScrollReveal,
+} from '../hooks/index.js';
 import './Landing.css';
 
 export default function Landing() {

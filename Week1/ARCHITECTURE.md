@@ -128,20 +128,22 @@ Week1/
    ├─ index.css            global design system (theme + glass + nav + buttons)
    ├─ videoSource.js       video URL + robust autoplay helper
    ├─ components/
-   │  ├─ Layout.jsx            shared shell for inner pages
-   │  ├─ Navbar.jsx            glass top nav + links
+   │  ├─ layout/   Layout.jsx (shell) + Navbar.jsx
+   │  ├─ ui/       reusable primitives — GlassCard, PageHead, FeatureCard,
+   │  │            Stars, SocialLinks (+ index.js barrel)
    │  ├─ VideoBackground.jsx   looping background <video> for inner pages
    │  ├─ ContactForm.jsx       form UI + state
-   │  └─ ContactForm.test.jsx  the 8 unit tests
-   ├─ pages/
-   │  ├─ Landing.jsx           Veldara replica (video + particles + scroll FX)
-   │  ├─ Landing.css           styles scoped ONLY to the landing
-   │  ├─ About.jsx             "how I built it" content
-   │  ├─ Reviews.jsx           testimonial cards
-   │  ├─ Contact.jsx           contact page (info aside + the form)
-   │  └─ NotFound.jsx          404 page
+   │  └─ ErrorBoundary.jsx     catches render errors → fallback
+   ├─ hooks/      custom hooks — useAutoplayVideo, useParticles, useHeroFade,
+   │              useCardScrollMask, useScrollReveal (+ index.js barrel)
+   ├─ data/       page content — about, reviews, contactPoints, landingCards
+   ├─ pages/      Landing (+ Landing.css), About, Reviews, Contact, NotFound
    ├─ utils/contactValidation.js  PURE validation logic (no React)
-   └─ test/setup.js               test environment bootstrap
+   ├─ App.test.jsx                 routing tests
+   └─ test/setup.js                test environment bootstrap
+
+   (tests sit next to what they cover: ContactForm.test.jsx, ui/ui.test.jsx,
+    pages/pages.test.jsx, App.test.jsx)
 ```
 
 | To change… | Open |
@@ -151,7 +153,10 @@ Week1/
 | Colors / theme / glass | `src/index.css` (`:root` variables at top) |
 | The background video | replace `public/flower.mp4` |
 | Video playback behavior | `src/videoSource.js` |
-| Landing hero text / cards | `src/pages/Landing.jsx` |
+| Landing animations (particles, scroll, reveal) | `src/hooks/` |
+| Reusable UI (glass card, page heading, stars) | `src/components/ui/` |
+| Page text / content | `src/data/` |
+| Landing hero text | `src/pages/Landing.jsx` (cards in `src/data/landingCards.js`) |
 | Form fields | `src/components/ContactForm.jsx` |
 | Form validation rules | `src/utils/contactValidation.js` |
 | Linting rules | `eslint.config.js` |
@@ -240,7 +245,7 @@ config objects applied in order:
      catches effect/re-render bugs), **eslint-plugin-react-refresh** (hot-reload
      safety).
    - Intentional overrides: `prop-types` off, `react-refresh/only-export-components`
-     as a warning, `no-unknown-property` off.
+     as a warning.
 4. **Test-file override** — adds test globals (`describe`, `it`, `expect`, `vi`…).
 5. **`eslint-config-prettier` last** — the bridge to Prettier (see §12).
 
@@ -278,10 +283,11 @@ environment, a setup file, CSS handling. Pieces:
 - **jest-dom** — readable matchers (`toBeInTheDocument()`).
 - **`src/test/setup.js`** — loads jest-dom + cleans the DOM after each test.
 
-What's tested: `ContactForm.test.jsx`, **8 tests** — (1) the pure `validate()`
-(valid passes; required flagged; bad email rejected; short message rejected) and
-(2) component behavior (renders fields; blocks submit + shows errors when empty;
-submits + shows success; clears an error on typing). Run with `npm test` /
+What's tested: **17 tests across four suites** — `ContactForm.test.jsx` (pure
+`validate()` + form behaviour), `ui/ui.test.jsx` (GlassCard, PageHead, Stars),
+`pages/pages.test.jsx` (About, Reviews, NotFound render), and `App.test.jsx`
+(routing: `/`, `/about`, 404). `setup.js` stubs media/canvas/IntersectionObserver
+so the video/particle components render in jsdom. Run with `npm test` /
 `npm run test:watch`.
 
 ---

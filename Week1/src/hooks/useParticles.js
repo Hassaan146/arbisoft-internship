@@ -17,6 +17,7 @@ export function useParticles(canvasRef) {
       particles = [];
       const count = Math.floor((canvas.width * canvas.height) / 12000);
       for (let i = 0; i < count; i += 1) {
+        // Slow drift (±0.15 px/frame), small size (0.5–2px), faint (0.2–0.8 alpha).
         particles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,

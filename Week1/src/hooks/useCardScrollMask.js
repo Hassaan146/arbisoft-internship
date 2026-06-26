@@ -23,6 +23,8 @@ export function useCardScrollMask(containerRef, triggerRef) {
       const scrollY = window.scrollY;
       const vh = window.innerHeight;
 
+      // Reveal zone opens half a viewport before the trigger and closes 0.3vh
+      // before its end, so the wipe runs comfortably within the scroll spacer.
       const start = triggerTop - vh * 0.5;
       const end = triggerTop + triggerHeight - vh * 0.3;
       const range = end - start;

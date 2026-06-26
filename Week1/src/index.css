@@ -58,6 +58,14 @@ a {
   text-decoration: none;
 }
 
+/* Visible keyboard focus for links and buttons (mouse clicks are unaffected) */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
 h1,
 h2,
 h3 {

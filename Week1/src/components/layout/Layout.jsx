@@ -2,6 +2,10 @@ import { Outlet, Link } from 'react-router-dom';
 import VideoBackground from '../VideoBackground.jsx';
 import Navbar from './Navbar.jsx';
 
+/**
+ * Shared shell for the routed pages: the persistent flower-video background,
+ * a dark scrim, the navbar, a footer, and an <Outlet/> for the active page.
+ */
 export default function Layout() {
   return (
     <>
