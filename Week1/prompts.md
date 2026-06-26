@@ -482,3 +482,16 @@ Secondly, for the things I explained:
 - Tell me the whole workflow, which file has which thing, the whole architecture of the code, so if I have to make changes I know which particular file I have to go to.
 - Tell me about the linting configuration you added, how you added it, and the prettier thing, all things related to the front.
 I have to give a detailed demo of this, not about the code explanation that this is a React function, but about the whole architecture of the code, the whole workflow of the code, and how the linting configuration is set. Explain everything except the code to me in detail so I can purely defend my architecture of the code. If a client asks me, "How did you implement this flower?", I can tell you: I had a flower.mp4. The cloud sandbox couldn't download it, so I had to download it manually in my terminal shell, and I use this. Tell me each and everything with conceptual clarity at its peak.
+
+## Code Review Prompt
+
+I want you to review the code. There should be two agents first. What should be the first agent? I want you to deploy two agents.
+1. The first should do the following steps.
+2. It should well document the code and necessary comments, not excessive comments, but necessary comments in my code.
+
+1. The next thing it should do is:
+1. Split my code into a modular approach for enhanced reusability in my code, then the good coding techniques (splitting down things into smaller parts for more reusability).
+2. Review the architecture of my code and improve the architecture, because I am giving this code to an industry specialist, so he should think that I am a professional. Keep in mind the architecture, then review the code, each and every thing.
+These are the things you must do, and then provide me the report, and then I'll tell you what the next thing
+ use the token optimization skill you have so that you should use less tokens.
+add this prompt too to the prompts.md file
