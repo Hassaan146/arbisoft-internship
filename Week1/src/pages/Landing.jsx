@@ -1,12 +1,26 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { VIDEO_URL, autoplayLoop } from '../videoSource.js';
 import './Landing.css';
 
 export default function Landing() {
+  // Shown only if the browser blocks muted autoplay — one tap starts it.
+  const [autoplayBlocked, setAutoplayBlocked] = useState(false);
+
   useEffect(() => {
     // ===================== BACKGROUND VIDEO (autoplay loop) =====================
-    const stopVideo = autoplayLoop(document.getElementById('landing-video'));
+    const video = document.getElementById('landing-video');
+    const stopVideo = autoplayLoop(video);
+    const onPlaying = () => setAutoplayBlocked(false);
+    video?.addEventListener('playing', onPlaying);
+    // If it still hasn't started shortly after load, reveal the tap-to-play hint
+    // (but not for reduced-motion users, where we intentionally keep it paused).
+    const reduce =
+      window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const blockedTimer = setTimeout(() => {
+      if (!reduce && video && video.paused) setAutoplayBlocked(true);
+    }, 1400);
 
     // ===================== PARTICLES =====================
     const pCanvas = document.getElementById('particles-canvas');
@@ -130,10 +144,21 @@ export default function Landing() {
       cancelAnimationFrame(cardsRaf);
       window.removeEventListener('resize', resizeParticles);
       window.removeEventListener('scroll', updateHeroOpacity);
+      video?.removeEventListener('playing', onPlaying);
+      clearTimeout(blockedTimer);
       stopVideo();
       observer.disconnect();
     };
   }, []);
+
+  function startVideo() {
+    const video = document.getElementById('landing-video');
+    if (!video) return;
+    video.muted = true;
+    const p = video.play();
+    if (p && p.catch) p.catch(() => {});
+    setAutoplayBlocked(false);
+  }
 
   return (
     <div className="veldara-page">
@@ -146,11 +171,16 @@ export default function Landing() {
           muted
           playsInline
           preload="auto"
-          crossOrigin="anonymous"
           src={VIDEO_URL}
         />
         <div className="overlay" />
       </div>
+
+      {autoplayBlocked && (
+        <button type="button" className="bg-play-btn" onClick={startVideo}>
+          ▶ Play background
+        </button>
+      )}
 
       {/* Particles */}
       <canvas id="particles-canvas" />

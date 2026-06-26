@@ -20,7 +20,6 @@ export default function VideoBackground() {
         muted
         playsInline
         preload="auto"
-        crossOrigin="anonymous"
         src={VIDEO_URL}
       />
     </div>

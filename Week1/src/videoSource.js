@@ -6,11 +6,14 @@ export const VIDEO_URL =
 /**
  * Reliably autoplay a muted, looping background video.
  *
- * React doesn't dependably reflect the `muted` attribute onto the element, so
- * the browser's initial autoplay decision (made at insertion) can block it, and
- * a single play() during React's commit loses the race. We force `muted`, then
- * retry play() on a deferred tick and on the media-ready events. Honours
- * prefers-reduced-motion by leaving the video paused.
+ * Background videos are surprisingly fragile: React doesn't dependably reflect
+ * the `muted` attribute, a single play() during commit can lose the autoplay
+ * race, and browsers pause media in hidden tabs. This helper:
+ *   - forces muted (property + attribute) so muted-autoplay is allowed,
+ *   - retries play() on a few timers and on the media-ready events,
+ *   - resumes when the tab becomes visible again,
+ *   - falls back to the user's first interaction if autoplay is blocked.
+ * Honours prefers-reduced-motion by leaving the video paused.
  *
  * Returns a cleanup function.
  */
@@ -19,6 +22,8 @@ export function autoplayLoop(video) {
 
   video.muted = true;
   video.defaultMuted = true;
+  video.setAttribute('muted', '');
+  video.loop = true;
 
   const reduce =
     window.matchMedia &&
@@ -35,36 +40,40 @@ export function autoplayLoop(video) {
     if (p && p.catch) p.catch(() => {});
   };
 
-  const t0 = setTimeout(kick, 0);
-  const t1 = setTimeout(kick, 350);
-  video.addEventListener('canplay', kick);
-  video.addEventListener('loadeddata', kick);
+  const timers = [
+    setTimeout(kick, 0),
+    setTimeout(kick, 300),
+    setTimeout(kick, 1000),
+  ];
 
-  // Safety net: if a browser's autoplay policy blocks muted autoplay, start
-  // playback on the user's first interaction.
+  const mediaEvents = ['loadeddata', 'canplay', 'canplaythrough'];
+  mediaEvents.forEach((e) => video.addEventListener(e, kick));
+
   const interactions = [
     'pointerdown',
-    'keydown',
     'touchstart',
-    'wheel',
+    'keydown',
+    'click',
     'scroll',
+    'wheel',
   ];
-  const onInteract = () => {
-    kick();
-    interactions.forEach((ev) => window.removeEventListener(ev, onInteract));
-  };
-  interactions.forEach((ev) =>
-    window.addEventListener(ev, onInteract, { once: true, passive: true })
+  const onInteract = () => kick();
+  interactions.forEach((e) =>
+    window.addEventListener(e, onInteract, { passive: true })
   );
+
+  const onVisible = () => {
+    if (document.visibilityState === 'visible') kick();
+  };
+  document.addEventListener('visibilitychange', onVisible);
 
   kick();
 
   return () => {
     cancelled = true;
-    clearTimeout(t0);
-    clearTimeout(t1);
-    video.removeEventListener('canplay', kick);
-    video.removeEventListener('loadeddata', kick);
-    interactions.forEach((ev) => window.removeEventListener(ev, onInteract));
+    timers.forEach(clearTimeout);
+    mediaEvents.forEach((e) => video.removeEventListener(e, kick));
+    interactions.forEach((e) => window.removeEventListener(e, onInteract));
+    document.removeEventListener('visibilitychange', onVisible);
   };
 }

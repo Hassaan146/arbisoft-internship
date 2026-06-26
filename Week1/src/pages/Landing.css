@@ -31,6 +31,32 @@
   background: rgba(0, 0, 0, 0.2);
 }
 
+/* Tap-to-play fallback (only shown if the browser blocks muted autoplay) */
+.veldara-page .bg-play-btn {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #fff;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.veldara-page .bg-play-btn:hover {
+  background: rgba(44, 92, 136, 0.85);
+}
+
 /* Particles */
 .veldara-page #particles-canvas {
   position: fixed;
