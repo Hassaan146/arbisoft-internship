@@ -476,3 +476,9 @@ I use three gs, red gs, and everything should be written. These must be the thre
 I want you to remove all that is left behind and that is already present, and restart from this and implement all my requirements.
 ```
 
+now the video is working properly. I appreciate it.
+Secondly, for the things I explained:
+- Tell me how the things were built.
+- Tell me the whole workflow, which file has which thing, the whole architecture of the code, so if I have to make changes I know which particular file I have to go to.
+- Tell me about the linting configuration you added, how you added it, and the prettier thing, all things related to the front.
+I have to give a detailed demo of this, not about the code explanation that this is a React function, but about the whole architecture of the code, the whole workflow of the code, and how the linting configuration is set. Explain everything except the code to me in detail so I can purely defend my architecture of the code. If a client asks me, "How did you implement this flower?", I can tell you: I had a flower.mp4. The cloud sandbox couldn't download it, so I had to download it manually in my terminal shell, and I use this. Tell me each and everything with conceptual clarity at its peak.
