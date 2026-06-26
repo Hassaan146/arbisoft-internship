@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "AI Data Analytics SaaS — a live 3D SPA built with React + Three.js",
+  "description": "Veldara — a live SPA with a cinematic flower-video background, built with React + Vite + React Router",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

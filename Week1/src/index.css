@@ -299,59 +299,6 @@ h3 {
   -webkit-text-fill-color: transparent;
 }
 
-/* ---------- Hero (Landing) ---------- */
-.hero {
-  padding: 90px 0 60px;
-  text-align: center;
-}
-
-.hero h1 {
-  font-size: clamp(2.6rem, 7vw, 5rem);
-  max-width: 14ch;
-  margin: 22px auto 18px;
-}
-
-.hero p {
-  max-width: 56ch;
-  margin: 0 auto 32px;
-  font-size: 1.12rem;
-}
-
-.hero-actions {
-  display: flex;
-  gap: 14px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-/* ---------- Stats / metric strip ---------- */
-.metric-strip {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-top: 56px;
-}
-
-.metric {
-  padding: 22px;
-  text-align: left;
-}
-
-.metric .num {
-  font-size: 2rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #fff, var(--accent-3));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.metric .label {
-  color: var(--ink-dim);
-  font-size: 0.9rem;
-  margin-top: 4px;
-}
-
 /* ---------- Feature grid ---------- */
 .feature-grid {
   display: grid;
@@ -378,156 +325,6 @@ h3 {
 .feature h3 {
   font-size: 1.2rem;
   margin-bottom: 8px;
-}
-
-/* ---------- Dashboard ---------- */
-.dash-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 20px;
-}
-
-.dash-grid .span-2 {
-  grid-column: span 2;
-}
-
-.panel {
-  padding: 24px;
-}
-
-.panel h3 {
-  font-size: 1.05rem;
-  margin-bottom: 4px;
-}
-
-.panel .sub {
-  color: var(--ink-faint);
-  font-size: 0.85rem;
-  margin-bottom: 18px;
-}
-
-.bars {
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
-  height: 180px;
-}
-
-.bars .bar {
-  flex: 1;
-  border-radius: 8px 8px 4px 4px;
-  background: linear-gradient(
-    180deg,
-    var(--accent-2),
-    rgba(var(--accent-rgb), 0.7)
-  );
-  position: relative;
-  min-height: 8px;
-  transition: filter 0.2s ease;
-}
-
-.bars .bar:hover {
-  filter: brightness(1.25);
-}
-
-.kpi-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.kpi {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px;
-  border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--glass-border);
-}
-
-.kpi .v {
-  font-weight: 700;
-}
-
-.trend-up {
-  color: var(--accent-2);
-}
-
-.trend-down {
-  color: var(--accent-3);
-}
-
-/* ---------- Pricing ---------- */
-.price-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  align-items: stretch;
-}
-
-.price-card {
-  padding: 30px;
-  display: flex;
-  flex-direction: column;
-}
-
-.price-card.featured {
-  background: var(--glass-bg-strong);
-  transform: translateY(-8px);
-}
-
-.price-card .tier {
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--accent-2);
-}
-
-.price-card .price {
-  font-size: 2.6rem;
-  font-weight: 800;
-  margin: 12px 0 4px;
-}
-
-.price-card .price span {
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--ink-faint);
-}
-
-.price-features {
-  list-style: none;
-  margin: 20px 0 26px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  flex: 1;
-}
-
-.price-features li {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  color: var(--ink-dim);
-  font-size: 0.94rem;
-}
-
-.price-features li::before {
-  content: '✓';
-  color: var(--accent-2);
-  font-weight: 800;
-}
-
-.badge {
-  align-self: flex-start;
-  margin-bottom: 6px;
-  padding: 4px 12px;
-  border-radius: 999px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--accent), var(--accent-3));
-  color: white;
 }
 
 /* ---------- Forms (Contact) ---------- */
@@ -676,22 +473,11 @@ h3 {
 
 /* ---------- Responsive ---------- */
 @media (max-width: 880px) {
-  .metric-strip,
-  .feature-grid,
-  .price-grid {
+  .feature-grid {
     grid-template-columns: 1fr;
-  }
-  .dash-grid {
-    grid-template-columns: 1fr;
-  }
-  .dash-grid .span-2 {
-    grid-column: span 1;
   }
   .contact-grid {
     grid-template-columns: 1fr;
-  }
-  .price-card.featured {
-    transform: none;
   }
 }
 
