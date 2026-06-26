@@ -13,13 +13,9 @@ export default function Landing() {
     const stopVideo = autoplayLoop(video);
     const onPlaying = () => setAutoplayBlocked(false);
     video?.addEventListener('playing', onPlaying);
-    // If it still hasn't started shortly after load, reveal the tap-to-play hint
-    // (but not for reduced-motion users, where we intentionally keep it paused).
-    const reduce =
-      window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // If autoplay is still blocked shortly after load, reveal the tap-to-play hint.
     const blockedTimer = setTimeout(() => {
-      if (!reduce && video && video.paused) setAutoplayBlocked(true);
+      if (video && video.paused) setAutoplayBlocked(true);
     }, 1400);
 
     // ===================== PARTICLES =====================
