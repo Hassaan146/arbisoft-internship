@@ -2,15 +2,15 @@
 
 A live single-page application that faithfully recreates the **Veldara**
 reference design. The landing page background is the exact cinematic flower clip,
-**scroll-scrubbed** frame-by-frame as you scroll (the flower blooms open and
-closed). Every routed page floats **glassmorphic** panels over that same flower
-clip, so the whole app shares one continuous background.
+**autoplaying on a seamless loop**. Every routed page floats **glassmorphic**
+panels over that same flower clip, so the whole app shares one continuous,
+moving background.
 
 ## Stack
 
 - **Vite** + **React 18** — fast SPA tooling
-- **Scroll-scrubbed video** — canvas frame extraction with a live-seek fallback
-  (`Landing`), shared as a looping background (`VideoBackground`)
+- **Autoplaying `<video>` background** — the flower clip, force-muted and looped,
+  shared via `VideoBackground` with a robust autoplay helper (`videoSource.js`)
 - **React Router v6** — client-side routing with a shared layout
 - **ESLint (flat config)** + **Prettier** — linting & formatting
 - **Vitest** + **Testing Library** — unit tests
@@ -28,7 +28,7 @@ clip, so the whole app shares one continuous background.
 ### Routes
 
 - `/` — Immersive scroll landing: the exact Veldara design with the
-  scroll-scrubbed flower video, a drifting particle field, scroll-revealed
+  autoplaying flower video, a drifting particle field, scroll-revealed
   cards, and a final reveal — its own full-bleed layout
 - `/about` — How the project was made (glassmorphism)
 - `/reviews` — Website reviews (glassmorphism)
@@ -57,10 +57,10 @@ npm run test:watch   # run tests in watch mode
 
 ## Design techniques
 
-- **Scroll-scrubbed flower video** — the exact reference clip, decoded into
-  frames (`createImageBitmap`) and drawn to a canvas at the frame matching scroll
-  position, with a live `currentTime`-seek fallback while frames decode. The same
-  clip loops gently behind the glass pages (`VideoBackground`), paused for
+- **Autoplaying flower video** — the exact reference clip, force-muted and
+  looped, plays continuously as the background on every page. A robust autoplay
+  helper retries on media-ready events and falls back to the user's first
+  interaction if a browser blocks muted autoplay; paused for
   `prefers-reduced-motion`.
 - **Glassmorphism** — translucent, blurred `.glass` panels (navbar, cards,
   forms, footer) reveal the shared flower background behind every routed page.

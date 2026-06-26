@@ -6,8 +6,8 @@ const stack = [
   },
   {
     icon: '🌸',
-    title: 'Three.js via R3F',
-    body: 'The live background is a procedural 3D flower built with React Three Fiber (@react-three/fiber) and Three.js — petals laid out in rings that bloom open and closed.',
+    title: 'Cinematic flower video',
+    body: 'The live background is the exact flower clip from the reference design, autoplaying on a seamless loop and shared across every page for one continuous backdrop.',
   },
   {
     icon: '🎞️',
@@ -33,9 +33,9 @@ const stack = [
 
 const steps = [
   'Scaffolded an isolated Vite + React project and wired up React Router with a shared layout.',
-  'Reproduced the Veldara landing markup and CSS one-to-one, then swapped the cinematic video for a real Three.js flower.',
-  'Built the flower in React Three Fiber — a petal shape extruded and arranged in three rings that lerp between a bud and a full bloom.',
-  'Added the routed glass pages (About, Reviews, Contact) over the same persistent 3D background.',
+  'Reproduced the Veldara landing markup and CSS one-to-one, keeping the exact cinematic flower clip as the background.',
+  'Wired the flower video to autoplay on a loop and reused it as the shared background behind the glass pages.',
+  'Added the routed glass pages (About, Reviews, Contact) over the same persistent video background.',
   'Locked it down with ESLint + Prettier and a suite of unit tests for the form validation.',
 ];
 
@@ -46,9 +46,9 @@ export default function About() {
         <span className="eyebrow">About this build</span>
         <h1>How I made this project</h1>
         <p className="muted">
-          Veldara is a live, 3D single-page application. The landing page is a
-          faithful recreation of the reference design, re-backed by a real
-          Three.js scene, and the rest of the app is built around it.
+          Veldara is a live single-page application. The landing page is a
+          faithful recreation of the reference design, backed by the exact
+          cinematic flower video, and the rest of the app is built around it.
         </p>
       </div>
 

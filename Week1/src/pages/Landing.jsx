@@ -1,165 +1,19 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { VIDEO_URL } from '../videoSource.js';
+import { VIDEO_URL, autoplayLoop } from '../videoSource.js';
 import './Landing.css';
 
 export default function Landing() {
   useEffect(() => {
-    let cancelled = false;
-
-    // ===================== SCROLL VIDEO =====================
-    const canvas = document.getElementById('video-canvas');
-    const videoEl = document.getElementById('video-fallback');
-    const ctx = canvas.getContext('2d');
-    let frames = [];
-    let framesReady = false;
-    let lastFrameIndex = -1;
-    let videoSeeking = false;
-    let videoRaf = 0;
-    let particlesRaf = 0;
-    let cardsRaf = 0;
-
-    function resizeCanvas() {
-      const dpr = Math.min(devicePixelRatio, 2);
-      const rect = canvas.getBoundingClientRect();
-      const w = Math.round(rect.width * dpr);
-      const h = Math.round(rect.height * dpr);
-      if (canvas.width !== w || canvas.height !== h) {
-        canvas.width = w;
-        canvas.height = h;
-      }
-      lastFrameIndex = -1;
-    }
-
-    async function extractFrames() {
-      try {
-        const response = await fetch(VIDEO_URL, { mode: 'cors' });
-        const blob = await response.blob();
-        const objectUrl = URL.createObjectURL(blob);
-
-        const video = document.createElement('video');
-        video.muted = true;
-        video.playsInline = true;
-        video.crossOrigin = 'anonymous';
-        video.preload = 'auto';
-        video.src = objectUrl;
-
-        await new Promise((resolve, reject) => {
-          video.onloadedmetadata = () => resolve();
-          video.onerror = () => reject();
-          setTimeout(() => reject(), 15000);
-        });
-
-        const scale = Math.min(1, 1280 / video.videoWidth);
-        const scaledWidth = Math.round(video.videoWidth * scale);
-        const scaledHeight = Math.round(video.videoHeight * scale);
-        const frameCount = Math.max(
-          30,
-          Math.min(120, Math.round(video.duration * 24))
-        );
-
-        for (let i = 0; i < frameCount; i += 1) {
-          if (cancelled) return;
-          const time = (i / (frameCount - 1)) * (video.duration - 0.05);
-          video.currentTime = time;
-          await new Promise((resolve, reject) => {
-            const onSeeked = () => {
-              video.removeEventListener('seeked', onSeeked);
-              resolve();
-            };
-            video.addEventListener('seeked', onSeeked);
-            setTimeout(() => {
-              video.removeEventListener('seeked', onSeeked);
-              reject();
-            }, 3000);
-          });
-          const bitmap = await createImageBitmap(video, {
-            resizeWidth: scaledWidth,
-            resizeHeight: scaledHeight,
-          });
-          frames.push(bitmap);
-        }
-
-        if (!cancelled && frames.length > 0) {
-          framesReady = true;
-          canvas.style.visibility = 'visible';
-          videoEl.style.display = 'none';
-        }
-        URL.revokeObjectURL(objectUrl);
-      } catch {
-        /* fall back to live video seeking */
-      }
-    }
-
-    function getScrollBounds() {
-      const vh = window.innerHeight;
-      return {
-        start: vh * 0.5,
-        end: document.documentElement.scrollHeight - vh,
-      };
-    }
-
-    function getProgress() {
-      const { start, end } = getScrollBounds();
-      const range = end - start;
-      if (range <= 0) return 0;
-      return Math.max(0, Math.min(1, (window.scrollY - start) / range));
-    }
-
-    function drawFrame(frame) {
-      const cw = canvas.width;
-      const ch = canvas.height;
-      const s = Math.max(cw / frame.width, ch / frame.height);
-      const dw = frame.width * s;
-      const dh = frame.height * s;
-      ctx.drawImage(frame, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
-    }
-
-    function videoTick() {
-      const progress = getProgress();
-      if (framesReady && frames.length > 0) {
-        const idx = Math.round(progress * (frames.length - 1));
-        if (idx !== lastFrameIndex) {
-          lastFrameIndex = idx;
-          if (frames[idx]) drawFrame(frames[idx]);
-        }
-      } else if (
-        videoEl.duration &&
-        isFinite(videoEl.duration) &&
-        videoEl.readyState >= 1
-      ) {
-        const target = progress * videoEl.duration;
-        if (!videoSeeking && Math.abs(videoEl.currentTime - target) > 0.001) {
-          videoSeeking = true;
-          videoEl.currentTime = target;
-        }
-      }
-      videoRaf = requestAnimationFrame(videoTick);
-    }
-
-    const onSeeked = () => {
-      videoSeeking = false;
-    };
-    const onStalled = () => {
-      videoSeeking = false;
-    };
-    const onLoadedData = () => {
-      videoEl.currentTime = 0;
-    };
-    videoEl.addEventListener('seeked', onSeeked);
-    videoEl.addEventListener('stalled', onStalled);
-    videoEl.addEventListener('loadeddata', onLoadedData);
-    canvas.style.visibility = 'hidden';
-
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    videoRaf = requestAnimationFrame(videoTick);
-    extractFrames();
+    // ===================== BACKGROUND VIDEO (autoplay loop) =====================
+    const stopVideo = autoplayLoop(document.getElementById('landing-video'));
 
     // ===================== PARTICLES =====================
     const pCanvas = document.getElementById('particles-canvas');
     const pCtx = pCanvas.getContext('2d');
     let particles = [];
+    let particlesRaf = 0;
+    let cardsRaf = 0;
 
     function createParticles() {
       particles = [];
@@ -272,31 +126,23 @@ export default function Landing() {
 
     // ===================== CLEANUP =====================
     return () => {
-      cancelled = true;
-      cancelAnimationFrame(videoRaf);
       cancelAnimationFrame(particlesRaf);
       cancelAnimationFrame(cardsRaf);
-      window.removeEventListener('resize', resizeCanvas);
       window.removeEventListener('resize', resizeParticles);
       window.removeEventListener('scroll', updateHeroOpacity);
-      videoEl.removeEventListener('seeked', onSeeked);
-      videoEl.removeEventListener('stalled', onStalled);
-      videoEl.removeEventListener('loadeddata', onLoadedData);
+      stopVideo();
       observer.disconnect();
-      frames.forEach((f) => {
-        if (f.close) f.close();
-      });
-      frames = [];
     };
   }, []);
 
   return (
     <div className="veldara-page">
-      {/* Scroll Video Background — the exact cinematic flower clip */}
+      {/* Background video — the cinematic flower clip, autoplaying on a loop */}
       <div id="scroll-video-container">
-        <canvas id="video-canvas" />
         <video
-          id="video-fallback"
+          id="landing-video"
+          autoPlay
+          loop
           muted
           playsInline
           preload="auto"

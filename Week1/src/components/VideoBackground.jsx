@@ -1,25 +1,14 @@
 import { useEffect, useRef } from 'react';
-import { VIDEO_URL } from '../videoSource.js';
+import { VIDEO_URL, autoplayLoop } from '../videoSource.js';
 
 /**
- * The same cinematic flower clip as the landing, gently looping behind the
- * glass pages so the whole app shares one continuous background.
- * Pauses for users who prefer reduced motion.
+ * The cinematic flower clip, autoplaying on a loop behind the glass pages so the
+ * whole app shares one continuous, moving background.
  */
 export default function VideoBackground() {
   const ref = useRef(null);
 
-  useEffect(() => {
-    const v = ref.current;
-    if (!v) return;
-    const reduce =
-      window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) {
-      v.removeAttribute('autoplay');
-      v.pause();
-    }
-  }, []);
+  useEffect(() => autoplayLoop(ref.current), []);
 
   return (
     <div className="scene-bg" aria-hidden="true">
