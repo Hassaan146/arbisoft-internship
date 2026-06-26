@@ -1,5 +1,5 @@
 import { Outlet, Link } from 'react-router-dom';
-import VideoBackground from './VideoBackground.jsx';
+import VideoBackground from '../VideoBackground.jsx';
 import Navbar from './Navbar.jsx';
 
 export default function Layout() {

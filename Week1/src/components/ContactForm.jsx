@@ -9,7 +9,8 @@ export default function ContactForm({ onSubmitted }) {
   function handleChange(e) {
     const { name, value } = e.target;
     setValues((v) => ({ ...v, [name]: value }));
-    // Clear a field's error as soon as the user edits it.
+    // Clear the error on edit (not on submit) so fixing a field gives instant
+    // positive feedback.
     setErrors((prev) => {
       if (!prev[name]) return prev;
       const next = { ...prev };

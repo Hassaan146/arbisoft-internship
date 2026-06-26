@@ -15,6 +15,8 @@ export const initialContact = {
  * an empty object means the form is valid.
  */
 export function validate(values) {
+  // Thresholds: 2-char name rejects single-letter typos; 10-char message forces
+  // something substantive enough to act on.
   const errors = {};
 
   if (!values.name.trim()) {

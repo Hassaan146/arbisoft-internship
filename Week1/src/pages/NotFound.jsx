@@ -1,17 +1,16 @@
 import { Link } from 'react-router-dom';
+import { GlassCard } from '../components/ui/index.js';
 
 export default function NotFound() {
   return (
     <div className="container notfound">
-      <div className="glass" style={{ padding: '60px 28px' }}>
+      <GlassCard className="notfound-card">
         <h1 className="gradient-text">404</h1>
-        <p className="muted" style={{ marginBottom: 28 }}>
-          This data point drifted off into the nebula.
-        </p>
+        <p className="muted">This page drifted off into the void.</p>
         <Link to="/" className="btn btn-primary">
           Back to home
         </Link>
-      </div>
+      </GlassCard>
     </div>
   );
 }

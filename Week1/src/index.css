@@ -414,6 +414,7 @@ h3 {
 
 .contact-aside h2 {
   font-size: 1.8rem;
+  margin-top: 16px;
   margin-bottom: 14px;
 }
 
@@ -469,6 +470,25 @@ h3 {
 
 .notfound h1 {
   font-size: clamp(4rem, 14vw, 9rem);
+}
+
+.notfound-card {
+  padding: 60px 28px;
+}
+
+.notfound-card .muted {
+  margin-bottom: 28px;
+}
+
+/* ---------- About: step-by-step card ---------- */
+.build-card {
+  margin-top: 28px;
+  padding: 32px;
+}
+
+.build-card h2 {
+  font-size: 1.6rem;
+  margin-bottom: 18px;
 }
 
 /* ---------- Responsive ---------- */

@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Veldara — Architecture & Workflow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* ── French Vanilla + Noir Marble palette ── */
+    --vanilla:      #F5F0E1;   /* page background */
+    --vanilla-deep: #EDE8D8;   /* card / section bg */
+    --vanilla-mid:  #E2DBCA;   /* borders, dividers */
+    --parchment:    #D8D0BC;   /* muted borders */
+    --taupe:        #9E8F78;   /* muted text */
+    --ink:          #2E2419;   /* primary text (espresso, not pure black) */
+    --marble:       #1C1917;   /* sidebar — true noir marble */
+    --marble-2:     #252220;   /* sidebar hover */
+    --marble-3:     #2F2C29;   /* sidebar active bg */
+    --gold:         #A8895A;   /* accent — burnished, warm */
+    --gold-light:   #C4A97A;   /* accent hover / light */
+    --gold-dim:     #7A6240;   /* muted accent */
+    --sage:         #7A8C72;   /* success / positive */
+    --rust:         #A0522D;   /* warning / amber role */
+
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-body:    'DM Sans', system-ui, sans-serif;
+    --font-mono:    'JetBrains Mono', monospace;
+
+    --radius: 6px;
+    --border-main: 1px solid var(--vanilla-mid);
+    --border-card: 1px solid var(--parchment);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--vanilla);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+
+  /* ─────────── SIDEBAR ─────────── */
+  .sidebar {
+    width: 256px;
+    flex-shrink: 0;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    background: var(--marble);
+    border-right: 1px solid #3a3530;
+    display: flex;
+    flex-direction: column;
+    padding: 36px 0 24px;
+    overflow-y: auto;
+    z-index: 100;
+  }
+
+  .sidebar-brand {
+    padding: 0 28px 28px;
+    border-bottom: 1px solid #3a3530;
+    margin-bottom: 24px;
+  }
+
+  .logo {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--vanilla);
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
+
+  .logo span { color: var(--gold); }
+
+  .sub {
+    font-size: 10px;
+    color: #7a6e62;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-top: 6px;
+    font-family: var(--font-mono);
+  }
+
+  .nav-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #5a5248;
+    padding: 0 28px 8px;
+    font-family: var(--font-mono);
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 28px;
+    color: #9e9488;
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 400;
+    border-left: 2px solid transparent;
+    transition: all 0.18s ease;
+  }
+
+  .nav-item:hover {
+    color: var(--vanilla);
+    background: var(--marble-2);
+    border-left-color: #5a5248;
+  }
+
+  .nav-item.active {
+    color: var(--gold-light);
+    border-left-color: var(--gold);
+    background: var(--marble-3);
+  }
+
+  .nav-item .num {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: #5a5248;
+    min-width: 18px;
+    transition: color 0.18s;
+  }
+
+  .nav-item.active .num { color: var(--gold-dim); }
+
+  /* ─────────── MAIN ─────────── */
+  .main {
+    margin-left: 256px;
+    max-width: 860px;
+    padding: 64px 68px;
+  }
+
+  /* ─────────── HERO ─────────── */
+  .hero {
+    padding-bottom: 56px;
+    border-bottom: var(--border-main);
+    margin-bottom: 68px;
+    position: relative;
+  }
+
+  .hero-ghost {
+    font-family: var(--font-display);
+    font-size: 120px;
+    font-weight: 700;
+    color: rgba(168,137,90,0.07);
+    position: absolute;
+    top: -20px; right: -20px;
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+    letter-spacing: -4px;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 18px;
+  }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(42px, 5.5vw, 64px);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -1.5px;
+    color: var(--ink);
+    margin-bottom: 18px;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero-desc {
+    font-size: 15px;
+    color: var(--taupe);
+    max-width: 540px;
+    line-height: 1.8;
+  }
+
+  .hero-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 28px;
+  }
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    padding: 4px 11px;
+    border-radius: 3px;
+    background: var(--vanilla-deep);
+    border: var(--border-card);
+    color: var(--taupe);
+    letter-spacing: 0.3px;
+  }
+
+  /* ─────────── SECTIONS ─────────── */
+  .section { margin-bottom: 72px; scroll-margin-top: 32px; }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .section-num {
+    font-family: var(--font-display);
+    font-size: 42px;
+    font-weight: 400;
+    font-style: italic;
+    color: rgba(168,137,90,0.22);
+    line-height: 1;
+    flex-shrink: 0;
+    user-select: none;
+  }
+
+  .section h2 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.4px;
+    line-height: 1.15;
+  }
+
+  .section p { color: var(--taupe); margin-bottom: 14px; line-height: 1.8; }
+  .section p:last-child { margin-bottom: 0; }
+  .section p strong { color: var(--ink); font-weight: 600; }
+  .section p em { color: var(--gold-dim); font-style: italic; }
+
+  /* ─────────── STACK GRID ─────────── */
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .stack-card {
+    background: var(--vanilla-deep);
+    border: var(--border-card);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+
+  .stack-card:hover {
+    border-color: var(--gold-dim);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(168,137,90,0.1);
+  }
+
+  .stack-card .layer {
+    font-size: 9px;
+    font-family: var(--font-mono);
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--parchment);
+    margin-bottom: 6px;
+  }
+
+  .stack-card .tool {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--gold);
+    margin-bottom: 4px;
+    letter-spacing: -0.2px;
+  }
+
+  .stack-card .role {
+    font-size: 12px;
+    color: var(--taupe);
+    line-height: 1.55;
+  }
+
+  /* ─────────── CODE BLOCKS ─────────── */
+  pre, .code-block {
+    background: var(--marble);
+    border: 1px solid #3a3530;
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.85;
+    color: #c4b49a;
+    overflow-x: auto;
+    margin: 18px 0;
+  }
+
+  pre .c  { color: #5a5248; font-style: italic; }
+  pre .h  { color: var(--gold-light); font-weight: 500; }
+  pre .g  { color: var(--sage); }
+  pre .w  { color: var(--vanilla); }
+
+  /* ─────────── PIPELINE ANIMATION ─────────── */
+  .pipeline {
+    display: flex;
+    align-items: center;
+    margin: 28px 0;
+    background: var(--marble);
+    border: 1px solid #3a3530;
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    overflow-x: auto;
+    gap: 0;
+  }
+
+  .pipe-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .pipe-icon {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    border: 1.5px solid;
+  }
+
+  .pipe-step.fmt  .pipe-icon { border-color: #7A6240; background: rgba(168,137,90,0.12); color: var(--gold-light); }
+  .pipe-step.lint .pipe-icon { border-color: #8a7a62; background: rgba(168,137,90,0.08); color: var(--gold); }
+  .pipe-step.test .pipe-icon { border-color: #7A8C72; background: rgba(122,140,114,0.12); color: var(--sage); }
+  .pipe-step.build .pipe-icon{ border-color: #9E8F78; background: rgba(168,137,90,0.06); color: var(--gold-light); }
+
+  .pipe-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    color: #9e9488;
+  }
+
+  .pipe-sub {
+    font-size: 10px;
+    color: #5a5248;
+    text-align: center;
+    max-width: 80px;
+    font-family: var(--font-body);
+  }
+
+  .pipe-arrow {
+    flex: 1;
+    min-width: 40px;
+    height: 1px;
+    background: #3a3530;
+    position: relative;
+    margin: 0 4px;
+    margin-bottom: 36px;
+    overflow: hidden;
+  }
+
+  .pipe-arrow::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    animation: flow 2.4s ease-in-out infinite;
+  }
+
+  .pipe-arrow:nth-child(2)::after { animation-delay: 0.6s; }
+  .pipe-arrow:nth-child(4)::after { animation-delay: 1.2s; }
+  .pipe-arrow:nth-child(6)::after { animation-delay: 1.8s; }
+
+  @keyframes flow {
+    0%   { left: -100%; opacity: 0; }
+    20%  { opacity: 1; }
+    80%  { opacity: 1; }
+    100% { left: 200%; opacity: 0; }
+  }
+
+  /* ─────────── FILE TREE ─────────── */
+  .file-tree {
+    background: var(--marble);
+    border: 1px solid #3a3530;
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 2;
+    overflow-x: auto;
+  }
+
+  .ft-dir     { color: var(--gold-light); font-weight: 500; }
+  .ft-file    { color: #c4b49a; }
+  .ft-note    { color: #5a5248; font-size: 11px; }
+  .ft-special { color: var(--gold); }
+
+  /* ─────────── TABLES ─────────── */
+  .lookup-table, .opt-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 18px 0;
+  }
+
+  .lookup-table th, .opt-table th {
+    background: var(--vanilla-deep);
+    color: var(--taupe);
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 11px 14px;
+    border-bottom: var(--border-main);
+  }
+
+  .lookup-table td, .opt-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(168,137,90,0.08);
+    color: var(--taupe);
+    vertical-align: top;
+  }
+
+  .lookup-table tr:hover td, .opt-table tr:hover td {
+    background: rgba(168,137,90,0.04);
+  }
+
+  .lookup-table td:first-child, .opt-table td:first-child {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--gold-dim);
+    white-space: nowrap;
+  }
+
+  .opt-table td:nth-child(2) {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--sage);
+  }
+
+  /* ─────────── INFO CARDS ─────────── */
+  .info-card {
+    background: var(--vanilla-deep);
+    border: var(--border-card);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 16px 20px;
+    margin: 18px 0;
+    font-size: 13.5px;
+    color: var(--taupe);
+    line-height: 1.8;
+  }
+
+  .info-card.amber  { border-left-color: var(--rust); }
+  .info-card.green  { border-left-color: var(--sage); }
+  .info-card.purple { border-left-color: var(--taupe); }
+  .info-card strong { color: var(--ink); font-weight: 600; }
+
+  /* ─────────── BOOT CHAIN ─────────── */
+  .boot-chain { display: flex; flex-direction: column; gap: 0; margin: 20px 0; }
+
+  .boot-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    position: relative;
+  }
+
+  .boot-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 40px;
+    bottom: -10px;
+    width: 1px;
+    background: linear-gradient(180deg, var(--gold-dim), transparent);
+  }
+
+  .boot-dot {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--vanilla-deep);
+    border: var(--border-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-style: italic;
+    color: var(--gold);
+    margin-top: 2px;
+  }
+
+  .boot-content { padding: 4px 0 24px; }
+
+  .boot-content .file {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--gold-dim);
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .boot-content .desc {
+    font-size: 13px;
+    color: var(--taupe);
+    line-height: 1.7;
+  }
+
+  /* ─────────── LAYER STACK ─────────── */
+  .layer-stack { display: flex; flex-direction: column; gap: 6px; margin: 20px 0; }
+
+  .layer-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 15px;
+    border-radius: var(--radius);
+    border: var(--border-card);
+    background: var(--vanilla-deep);
+    transition: border-color 0.2s;
+  }
+
+  .layer-row:hover { border-color: var(--gold-dim); }
+
+  .layer-row.back    { border-left: 3px solid var(--rust); }
+  .layer-row.scrim   { border-left: 3px solid var(--parchment); }
+  .layer-row.content { border-left: 3px solid var(--gold); }
+  .layer-row.canvas  { border-left: 3px solid var(--sage); }
+  .layer-row.navbar  { border-left: 3px solid var(--taupe); }
+  .layer-row.btn     { border-left: 3px solid var(--gold-dim); }
+
+  .z-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    background: var(--vanilla-mid);
+    color: var(--gold-dim);
+    min-width: 84px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .layer-name { font-size: 13px; color: var(--ink); font-weight: 500; flex: 1; }
+  .layer-desc { font-size: 11.5px; color: var(--taupe); }
+
+  /* ─────────── RULE GRID ─────────── */
+  .rule-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 20px 0;
+  }
+
+  .rule-card {
+    background: var(--vanilla-deep);
+    border: var(--border-card);
+    border-radius: var(--radius);
+    padding: 15px 17px;
+    transition: border-color 0.2s;
+  }
+
+  .rule-card:hover { border-color: var(--gold-dim); }
+
+  .rule-card .rname {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gold-dim);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  .rule-card .rdesc { font-size: 12px; color: var(--taupe); line-height: 1.6; }
+
+  /* ─────────── TEST LIST ─────────── */
+  .test-list { display: flex; flex-direction: column; gap: 7px; margin: 14px 0; }
+
+  .test-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 9px 13px;
+    background: var(--vanilla-deep);
+    border: var(--border-card);
+    border-radius: var(--radius);
+    font-size: 13px;
+    color: var(--taupe);
+    line-height: 1.5;
+  }
+
+  .test-item::before {
+    content: '✓';
+    color: var(--sage);
+    font-weight: 700;
+    font-family: var(--font-mono);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ─────────── Q&A ─────────── */
+  .qa-list { display: flex; flex-direction: column; gap: 14px; }
+
+  .qa-item {
+    background: var(--vanilla-deep);
+    border: var(--border-card);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .qa-item:hover { border-color: var(--gold-dim); }
+
+  .qa-q {
+    padding: 14px 18px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--ink);
+    border-bottom: var(--border-main);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    letter-spacing: -0.2px;
+  }
+
+  .qa-q::before {
+    content: 'Q';
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--gold-dim);
+    background: rgba(168,137,90,0.1);
+    border: 1px solid var(--parchment);
+    padding: 2px 6px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+
+  .qa-a {
+    padding: 13px 18px 13px 50px;
+    font-size: 13px;
+    color: var(--taupe);
+    line-height: 1.8;
+  }
+
+  /* ─────────── INLINE CODE ─────────── */
+  code {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    background: var(--vanilla-mid);
+    border: 1px solid var(--parchment);
+    border-radius: 3px;
+    padding: 1px 5px;
+    color: var(--gold-dim);
+  }
+
+  /* ─────────── DIVIDER ─────────── */
+  .divider {
+    border: none;
+    border-top: var(--border-main);
+    margin: 60px 0;
+  }
+
+  /* ─────────── SCROLLBAR ─────────── */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: var(--vanilla); }
+  ::-webkit-scrollbar-thumb { background: var(--parchment); border-radius: 3px; }
+
+  /* ─────────── RESPONSIVE ─────────── */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 32px 24px; }
+    .rule-grid { grid-template-columns: 1fr; }
+    .pipeline { flex-wrap: wrap; gap: 12px; }
+    .hero-ghost { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo">Vel<span>dara</span></div>
+    <div class="sub">Architecture Docs</div>
+  </div>
+
+  <div class="nav-label">Contents</div>
+  <a class="nav-item active" href="#what">   <span class="num">01</span> What the App Is</a>
+  <a class="nav-item" href="#stack">         <span class="num">02</span> The Stack</a>
+  <a class="nav-item" href="#env">           <span class="num">03</span> Virtual Environment</a>
+  <a class="nav-item" href="#boot">          <span class="num">04</span> Render Pipeline</a>
+  <a class="nav-item" href="#routing">       <span class="num">05</span> Routing Strategy</a>
+  <a class="nav-item" href="#layers">        <span class="num">06</span> Visual Layering</a>
+  <a class="nav-item" href="#filemap">       <span class="num">07</span> File Map</a>
+  <a class="nav-item" href="#video">         <span class="num">08</span> Video Subsystem</a>
+  <a class="nav-item" href="#styling">       <span class="num">09</span> Styling Architecture</a>
+  <a class="nav-item" href="#form">          <span class="num">10</span> Form &amp; Validation</a>
+  <a class="nav-item" href="#eslint">        <span class="num">11</span> ESLint (Flat Config)</a>
+  <a class="nav-item" href="#prettier">      <span class="num">12</span> Prettier Integration</a>
+  <a class="nav-item" href="#testing">       <span class="num">13</span> Testing</a>
+  <a class="nav-item" href="#scripts">       <span class="num">14</span> Scripts &amp; Workflow</a>
+  <a class="nav-item" href="#qa">            <span class="num">15</span> Demo Q&amp;A</a>
+</aside>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero" id="what">
+    <div class="hero-ghost">V</div>
+    <div class="hero-eyebrow">// architecture &amp; workflow — demo guide</div>
+    <h1>Veldara<br /><em>Under the Hood</em></h1>
+    <p class="hero-desc">
+      A complete conceptual walkthrough of how the project is built, how it runs,
+      what every file does, and how the tooling is wired. Written to defend the
+      architecture in a client demo — concepts, not line-by-line code.
+    </p>
+    <div class="hero-tags">
+      <span class="tag">React 18</span>
+      <span class="tag">Vite</span>
+      <span class="tag">React Router v6</span>
+      <span class="tag">ESLint flat config</span>
+      <span class="tag">Prettier</span>
+      <span class="tag">Vitest</span>
+      <span class="tag">Plain CSS</span>
+      <span class="tag">HTML5 Video</span>
+    </div>
+  </div>
+
+  <!-- ── S1: WHAT THE APP IS ── -->
+  <section class="section" id="what-detail">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>What the App Is</h2>
+    </div>
+    <p>
+      A <strong>single-page application (SPA)</strong>: the browser loads one HTML page exactly once,
+      then JavaScript swaps the visible content as you navigate — no full page reloads,
+      no server round-trips per navigation.
+    </p>
+    <p>
+      It has <strong>four screens</strong> (Home, About, Reviews, Contact) that share
+      <strong>one continuously-playing cinematic flower video</strong> as the background.
+      The landing page is a pixel-faithful replica of the reference design; the other
+      three pages use <strong>glassmorphism</strong> — frosted, semi-transparent panels
+      floating over that same live video.
+    </p>
+    <div class="info-card">
+      <strong>The defining characteristic:</strong> a single flower video plays behind everything,
+      and glass panels float over it on inner pages. The entire visual identity depends
+      on that video working correctly — which is why its playback reliability was engineered carefully.
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── S2: STACK ── -->
+  <section class="section" id="stack">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>The Stack</h2>
+    </div>
+    <p><em>Vite builds it, React renders it, React Router routes it, and a quality layer (ESLint + Prettier + Vitest) keeps it clean and correct.</em></p>
+
+    <div class="stack-grid">
+      <div class="stack-card"><div class="layer">Build / Dev Server</div><div class="tool">Vite</div><div class="role">Hot-reload dev server; bundles for production. Much faster than CRA (which is deprecated).</div></div>
+      <div class="stack-card"><div class="layer">UI Library</div><div class="tool">React 18</div><div class="role">Builds the screen from reusable components. Component reuse, huge ecosystem, the SPA standard.</div></div>
+      <div class="stack-card"><div class="layer">Navigation</div><div class="tool">React Router v6</div><div class="role">Maps URLs to screens, client-side. Intercepts link clicks, changes the URL, renders matching component.</div></div>
+      <div class="stack-card"><div class="layer">Background</div><div class="tool">HTML5 &lt;video&gt;</div><div class="role">The self-hosted flower clip, autoplay + loop. No CDN dependency, no CORS issues.</div></div>
+      <div class="stack-card"><div class="layer">Particles</div><div class="tool">Canvas 2D</div><div class="role">Drifting dots over the hero on the landing page. Native browser API, zero dependencies.</div></div>
+      <div class="stack-card"><div class="layer">Styling</div><div class="tool">Plain CSS</div><div class="role">Theme tokens + glassmorphism. No framework overhead, full control over every pixel.</div></div>
+      <div class="stack-card"><div class="layer">Linting</div><div class="tool">ESLint (flat config)</div><div class="role">Bug-catching + code rules. ESLint 9's new flat config format — an array of config objects.</div></div>
+      <div class="stack-card"><div class="layer">Formatting</div><div class="tool">Prettier</div><div class="role">Consistent code style. Owns formatting completely so ESLint can focus on correctness.</div></div>
+      <div class="stack-card"><div class="layer">Testing</div><div class="tool">Vitest + Testing Library</div><div class="role">Unit tests in a simulated DOM (jsdom). Vite-native runner, very fast.</div></div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── S3: ENV ── -->
+  <section class="section" id="env">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>The "Virtual Environment"</h2>
+    </div>
+    <p>
+      Node has no <code>venv</code> like Python. The isolated environment <strong>is</strong> the
+      project folder itself. <code>npm install</code> reads <code>package.json</code> and downloads
+      dependencies into a local <code>node_modules/</code> that belongs only to this project — not globally.
+    </p>
+    <table class="lookup-table">
+      <thead><tr><th>File</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td>package.json</td><td>Manifest: lists dependencies + npm scripts. The source of truth.</td></tr>
+        <tr><td>package-lock.json</td><td>Pins exact versions for reproducible installs across machines.</td></tr>
+        <tr><td>node_modules/</td><td>The downloaded libraries. Git-ignored; recreated by <code>npm install</code>.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── S4: BOOT ── -->
+  <section class="section" id="boot">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>How the App Boots — Render Pipeline</h2>
+    </div>
+    <p>The browser only loads <code>index.html</code> once. Everything after that is JavaScript swapping components in and out.</p>
+
+    <div class="boot-chain">
+      <div class="boot-step">
+        <div class="boot-dot">1</div>
+        <div class="boot-content">
+          <div class="file">index.html</div>
+          <div class="desc">The ONE page the browser ever loads. Contains <code>&lt;div id="root"&gt;</code> — an empty mount point. Also loads fonts and the JS entry point.</div>
+        </div>
+      </div>
+      <div class="boot-step">
+        <div class="boot-dot">2</div>
+        <div class="boot-content">
+          <div class="file">src/main.jsx — Ignition</div>
+          <div class="desc">Boots React and the Router. Wraps everything in <code>React.StrictMode</code> (dev-only safety checks) and <code>BrowserRouter</code> (enables URL routing). Mounts <code>&lt;App /&gt;</code> into <code>#root</code>.</div>
+        </div>
+      </div>
+      <div class="boot-step">
+        <div class="boot-dot">3</div>
+        <div class="boot-content">
+          <div class="file">src/App.jsx — Switchboard</div>
+          <div class="desc">The route table. Maps every URL to a screen. Picks a component by URL and React swaps it in with no server round-trip. This is the SPA.</div>
+        </div>
+      </div>
+      <div class="boot-step">
+        <div class="boot-dot">4</div>
+        <div class="boot-content">
+          <div class="file">Pages &amp; Components — Render</div>
+          <div class="desc"><code>&lt;Landing /&gt;</code> for <code>/</code>. <code>&lt;Layout /&gt;</code> wraps About, Reviews, Contact. Layout provides the shared video background, navbar, footer, and an <code>&lt;Outlet /&gt;</code> slot where the current page renders.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── S5: ROUTING ── -->
+  <section class="section" id="routing">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2>Routing — The Two-Layout Strategy</h2>
+    </div>
+    <p>There are two fundamentally different kinds of page, so there are two layouts:</p>
+    <div class="info-card amber">
+      <strong>Landing (<code>/</code>) stands alone.</strong> A full-bleed, immersive replica with its own fixed
+      navbar, video container, particles, and scroll choreography. Not wrapped in the shared layout.
+      It's the flagship experience — unique, self-contained.
+    </div>
+    <div class="info-card">
+      <strong>About / Reviews / Contact share <code>&lt;Layout /&gt;</code>.</strong> A common wrapper providing
+      the shared video background, dark scrim overlay, glass navbar, footer, and an <code>&lt;Outlet /&gt;</code>
+      — the slot where React Router injects the current page's content.
+    </div>
+    <p>Client-side routing: React Router intercepts link clicks, changes the URL, and renders the matching component without reloading. <code>*</code> is the catch-all 404 route.</p>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── S6: LAYERS ── -->
+  <section class="section" id="layers">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2>Visual Layering — How Glass Floats Over Video</h2>
+    </div>
+    <p>Pure CSS stacking with <code>z-index</code>. The video and overlay are <code>position: fixed</code> so they stay put while content scrolls. Glassmorphism = semi-transparent background + <code>backdrop-filter: blur()</code> + a 1px translucent border + soft shadow.</p>
+
+    <div class="layer-stack">
+      <div class="layer-row back">
+        <span class="z-badge">z-index −10</span>
+        <span class="layer-name">Video (<code>flower.mp4</code>)</span>
+        <span class="layer-desc">Fills viewport, furthest back. Fixed position.</span>
+      </div>
+      <div class="layer-row scrim">
+        <span class="z-badge">z-index −1</span>
+        <span class="layer-name">Dark Scrim Overlay</span>
+        <span class="layer-desc">Keeps text readable over the moving video.</span>
+      </div>
+      <div class="layer-row content">
+        <span class="z-badge">z-index 0–2</span>
+        <span class="layer-name">Page Content</span>
+        <span class="layer-desc">Glass cards, text. Video diffuses through each panel.</span>
+      </div>
+      <div class="layer-row canvas">
+        <span class="z-badge">z-index 3</span>
+        <span class="layer-name">Particle Canvas</span>
+        <span class="layer-desc">Drifting dots. Landing page only.</span>
+      </div>
+      <div class="layer-row navbar">
+        <span class="z-badge">z-index 50</span>
+        <span class="layer-name">Navbar</span>
+        <span class="layer-desc">Always on top across all pages.</span>
+      </div>
+      <div class="layer-row btn">
+        <span class="z-badge">z-index 60</span>
+        <span class="layer-name">"▶ Play background" button</span>
+        <span class="layer-desc">Landing only, shown if autoplay is blocked.</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── S7: FILE MAP ── -->
+  <section class="section" id="filemap">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2>File Map — "Where Do I Change X?"</h2>
+    </div>
+
+    <div class="file-tree">
+<span class="ft-dir">Week1/</span>
+├─ <span class="ft-special">index.html</span>            <span class="ft-note">← page title, fonts, the root &lt;div&gt;</span>
+├─ <span class="ft-special">package.json</span>          <span class="ft-note">← dependencies + npm scripts</span>
+├─ <span class="ft-special">vite.config.js</span>        <span class="ft-note">← build config + Vitest config</span>
+├─ <span class="ft-special">eslint.config.js</span>      <span class="ft-note">← ALL linting rules (flat config)</span>
+├─ <span class="ft-special">.prettierrc</span>           <span class="ft-note">← formatting rules</span>
+├─ <span class="ft-special">.prettierignore</span>       <span class="ft-note">← files Prettier skips</span>
+├─ <span class="ft-dir">public/</span>
+│  └─ <span class="ft-file">flower.mp4</span>           <span class="ft-note">← the self-hosted background video</span>
+└─ <span class="ft-dir">src/</span>
+   ├─ <span class="ft-file">main.jsx</span>             <span class="ft-note">← app entry (React + Router boot)</span>
+   ├─ <span class="ft-file">App.jsx</span>              <span class="ft-note">← ROUTE TABLE (add/remove pages here)</span>
+   ├─ <span class="ft-file">index.css</span>            <span class="ft-note">← global design system</span>
+   ├─ <span class="ft-file">videoSource.js</span>       <span class="ft-note">← video URL + robust autoplay helper</span>
+   ├─ <span class="ft-dir">components/</span>
+   │  ├─ <span class="ft-file">Layout.jsx</span>          <span class="ft-note">← shared shell for inner pages</span>
+   │  ├─ <span class="ft-file">Navbar.jsx</span>          <span class="ft-note">← glass top nav + links</span>
+   │  ├─ <span class="ft-file">VideoBackground.jsx</span>  <span class="ft-note">← looping &lt;video&gt; for inner pages</span>
+   │  ├─ <span class="ft-file">ContactForm.jsx</span>     <span class="ft-note">← form UI + state</span>
+   │  └─ <span class="ft-file">ContactForm.test.jsx</span> <span class="ft-note">← the 8 unit tests</span>
+   ├─ <span class="ft-dir">pages/</span>
+   │  ├─ <span class="ft-file">Landing.jsx</span>         <span class="ft-note">← Veldara replica (video + particles + scroll FX)</span>
+   │  ├─ <span class="ft-file">Landing.css</span>         <span class="ft-note">← styles scoped ONLY to the landing page</span>
+   │  ├─ <span class="ft-file">About.jsx</span>           <span class="ft-note">← "how I built it" content</span>
+   │  ├─ <span class="ft-file">Reviews.jsx</span>         <span class="ft-note">← testimonial cards</span>
+   │  ├─ <span class="ft-file">Contact.jsx</span>         <span class="ft-note">← contact page (info aside + form)</span>
+   │  └─ <span class="ft-file">NotFound.jsx</span>        <span class="ft-note">← 404 page</span>
+   ├─ <span class="ft-dir">utils/</span>
+   │  └─ <span class="ft-file">contactValidation.js</span> <span class="ft-note">← PURE validation logic (no React)</span>
+   └─ <span class="ft-dir">test/</span>
+      └─ <span class="ft-file">setup.js</span>            <span class="ft-note">← test environment bootstrap</span>
+    </div>
+
+    <table class="lookup-table">
+      <thead><tr><th>To change…</th><th>Open this file</th></tr></thead>
+      <tbody>
+        <tr><td>Add / rename / remove a page</td><td><code>src/App.jsx</code> (+ a file in <code>src/pages/</code>)</td></tr>
+        <tr><td>Nav links</td><td><code>Navbar.jsx</code> (inner) / <code>Landing.jsx</code> (landing)</td></tr>
+        <tr><td>Colors / theme / glass effect</td><td><code>src/index.css</code> — <code>:root</code> variables at top</td></tr>
+        <tr><td>The background video</td><td>Replace <code>public/flower.mp4</code></td></tr>
+        <tr><td>Video playback behavior</td><td><code>src/videoSource.js</code></td></tr>
+        <tr><td>Landing hero text / cards</td><td><code>src/pages/Landing.jsx</code></td></tr>
+        <tr><td>Form fields</td><td><code>src/components/ContactForm.jsx</code></td></tr>
+        <tr><td>Form validation rules</td><td><code>src/utils/contactValidation.js</code></td></tr>
+        <tr><td>Linting rules</td><td><code>eslint.config.js</code></td></tr>
+        <tr><td>Formatting rules</td><td><code>.prettierrc</code></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── S8: VIDEO ── -->
+  <section class="section" id="video">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2>The Flower / Background Video Subsystem</h2>
+    </div>
+    <p>The reference used a scroll-scrubbed video. After iterating (including a procedural 3D flower), the correct answer was: <strong>the flower IS the video</strong>, so use the exact clip and autoplay it on a loop.</p>
+
+    <div class="info-card amber">
+      <strong>Why self-hosted in <code>public/</code>?</strong> The clip was originally a remote CDN URL, but the
+      cloud sandbox had no outbound internet and couldn't download it. It was downloaded manually in a terminal
+      (<code>Invoke-WebRequest</code>) into <code>public/</code>, and the app now serves it same-origin at
+      <code>/flower.mp4</code>. This turned out to be the better architecture anyway — not just a workaround.
+    </div>
+
+    <p>Why self-hosting is the right architecture:</p>
+    <div class="test-list">
+      <div class="test-item">Same-origin → no CORS dependency, no cross-origin throttling</div>
+      <div class="test-item">No external dependency → the CDN link can't expire or rate-limit</div>
+      <div class="test-item">Vite bundles <code>public/flower.mp4</code> into <code>dist/</code> so the build is self-contained</div>
+    </div>
+
+    <p style="margin-top:22px;"><strong>Robust playback</strong> is handled by <code>videoSource.js</code> (<code>autoplayLoop</code>):</p>
+    <div class="test-list">
+      <div class="test-item">Browsers only autoplay <strong>muted</strong> video → force <code>muted</code> as property AND attribute (React is unreliable about reflecting <code>muted</code>)</div>
+      <div class="test-item">A single <code>play()</code> can lose a race during render → retry on timers + media-ready events</div>
+      <div class="test-item">Browsers pause video in hidden tabs → resume on <code>visibilitychange</code></div>
+      <div class="test-item">If autoplay is still blocked → start on first scroll/click/tap, show a "▶ Play background" button as manual fallback</div>
+    </div>
+
+    <div class="info-card green" style="margin-top:20px;">
+      <strong>The real bug we fixed:</strong> the video loaded and decoded fine but stayed frozen.
+      Root cause was <code>prefers-reduced-motion</code> — the OS (Windows "animation effects" off) reports it,
+      and the code was honoring it by pausing the video. Since the moving flower is the core experience
+      (silent, non-interactive), the fix was to always autoplay. Diagnosis was done by inspecting the live
+      element's <code>readyState</code>, <code>error</code>, <code>currentTime</code> vs. real time,
+      <code>visibilityState</code>, and the reduced-motion media query — not by guessing.
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── S9: STYLING ── -->
+  <section class="section" id="styling">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2>Styling Architecture</h2>
+    </div>
+    <p>Two CSS files, deliberately separated:</p>
+    <div class="info-card">
+      <strong><code>src/index.css</code> — the global design system.</strong><br />
+      A <code>:root</code> block of CSS custom properties (design tokens): backgrounds, text colors, three accents,
+      glass background/border/blur, radius, max width. Everything references these tokens, so re-theming means
+      changing a few variables. Also defines reusable blocks: <code>.glass</code>, <code>.container</code>,
+      <code>.btn</code>, <code>.navbar</code>, <code>.feature-grid</code>, form fields, etc.
+    </div>
+    <div class="info-card amber">
+      <strong><code>src/pages/Landing.css</code> — scoped to the landing only.</strong><br />
+      Every rule is prefixed with <code>.veldara-page</code> so the exact-replica styles can't leak into the glass pages.
+      This is deliberate scope isolation — same principle as CSS Modules, done manually.
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── S10: FORM ── -->
+  <section class="section" id="form">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <h2>Form + Validation Architecture</h2>
+    </div>
+    <p>Strict <strong>separation of concerns</strong> — the logic and the UI are split into two separate files:</p>
+    <div class="info-card purple">
+      <strong><code>utils/contactValidation.js</code></strong> — a pure <code>validate(values)</code> function
+      (no React, no DOM) returning an errors object. Pure = trivially testable and reusable anywhere.
+    </div>
+    <div class="info-card">
+      <strong><code>components/ContactForm.jsx</code></strong> — UI + state. Tracks values, runs
+      <code>validate()</code> on submit, shows inline errors, clears each error as the user fixes it, shows success.
+    </div>
+    <p>Client-side validation rules:</p>
+    <div class="test-list">
+      <div class="test-item">Name: required, minimum 2 characters</div>
+      <div class="test-item">Email: required, valid format (regex)</div>
+      <div class="test-item">Message: required, minimum 10 characters</div>
+    </div>
+    <p style="margin-top:12px;">The form uses <code>noValidate</code> so our custom logic runs, not the browser's native validation UI.</p>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── S11: ESLINT ── -->
+  <section class="section" id="eslint">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <h2>Linting — ESLint (Flat Config)</h2>
+    </div>
+    <p>
+      <strong>Linting</strong> = static analysis that reads code without running it and flags bugs and rule violations.
+      Think of it as a spell-checker for code logic and syntax. ESLint 9 introduces the <strong>flat config</strong>
+      format — a single <code>eslint.config.js</code> that exports an array of config objects applied in order.
+    </p>
+
+    <div class="rule-grid">
+      <div class="rule-card"><div class="rname">ignores block</div><div class="rdesc">Skips <code>dist/</code>, <code>node_modules/</code>, and <code>coverage/</code>. ESLint never looks at generated or vendor code.</div></div>
+      <div class="rule-card"><div class="rname">@eslint/js recommended</div><div class="rdesc">Baseline JS correctness rules — catches undefined variables, unreachable code, bad equality, etc.</div></div>
+      <div class="rule-card"><div class="rname">eslint-plugin-react</div><div class="rdesc">React-specific best practices. The <code>jsx-runtime</code> preset means you don't need to import React in every file (React 17+ feature).</div></div>
+      <div class="rule-card"><div class="rname">eslint-plugin-react-hooks</div><div class="rdesc">Enforces the Rules of Hooks — catches effect and re-render bugs caused by wrong hook usage (e.g. hooks inside conditions).</div></div>
+      <div class="rule-card"><div class="rname">eslint-plugin-react-refresh</div><div class="rdesc">Hot-reload safety. Warns when a module exports something that would break Vite's fast refresh.</div></div>
+      <div class="rule-card"><div class="rname">Test-file override</div><div class="rdesc">A separate config block adds Vitest globals (<code>describe</code>, <code>it</code>, <code>expect</code>, <code>vi</code>) so ESLint doesn't flag them as undefined.</div></div>
+    </div>
+
+    <div class="info-card">
+      <strong>Intentional overrides:</strong> <code>prop-types</code> is off (we use TypeScript-style inference),
+      <code>react-refresh/only-export-components</code> is a warning (not error), and
+      <code>no-unknown-property</code> is off (to allow custom HTML attributes in JSX).
+    </div>
+
+    <pre><span class="c">// Run linting:</span>
+<span class="g">npm run lint</span>       <span class="c"># report only</span>
+<span class="g">npm run lint:fix</span>   <span class="c"># auto-fix what can be fixed</span></pre>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── S12: PRETTIER ── -->
+  <section class="section" id="prettier">
+    <div class="section-header">
+      <span class="section-num">12</span>
+      <h2>Prettier — and How It Coexists With ESLint</h2>
+    </div>
+    <p>Prettier is an opinionated <strong>formatter</strong> (style only, not bugs). ESLint can also enforce style, which would conflict. The bridge is <code>eslint-config-prettier</code> — placed <em>last</em> in the ESLint config array, it switches off every ESLint stylistic rule that Prettier already handles.</p>
+    <div class="info-card green">
+      <strong>Division of labor:</strong> Prettier owns formatting. ESLint owns code quality. They never fight.
+    </div>
+
+    <table class="opt-table">
+      <thead><tr><th>Option</th><th>Value</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td>semi</td><td>true</td><td>Always add semicolons at end of statements</td></tr>
+        <tr><td>singleQuote</td><td>true</td><td>Use <code>'</code> instead of <code>"</code> for strings</td></tr>
+        <tr><td>trailingComma</td><td>"es5"</td><td>Trailing commas where valid in ES5 (objects, arrays)</td></tr>
+        <tr><td>printWidth</td><td>80</td><td>Wrap lines longer than 80 characters</td></tr>
+        <tr><td>tabWidth</td><td>2</td><td>2 spaces per indentation level</td></tr>
+        <tr><td>arrowParens</td><td>"always"</td><td>Always parenthesize arrow function params: <code>(x) =&gt; x</code></td></tr>
+      </tbody>
+    </table>
+
+    <p><code>.prettierignore</code> keeps Prettier off <code>node_modules/</code> and <code>dist/</code>.</p>
+    <pre><span class="c">// Run formatting:</span>
+<span class="g">npm run format</span>         <span class="c"># rewrite all files</span>
+<span class="g">npm run format:check</span>   <span class="c"># verify only (CI-safe)</span></pre>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── S13: TESTING ── -->
+  <section class="section" id="testing">
+    <div class="section-header">
+      <span class="section-num">13</span>
+      <h2>Testing</h2>
+    </div>
+    <p>Config lives in <code>vite.config.js</code> (<code>test</code> block). Four moving parts:</p>
+
+    <div class="stack-grid">
+      <div class="stack-card"><div class="layer">Test Runner</div><div class="tool">Vitest</div><div class="role">Vite-native, extremely fast. Same config file as the build tool.</div></div>
+      <div class="stack-card"><div class="layer">DOM Simulator</div><div class="tool">jsdom</div><div class="role">A browser DOM simulated in Node. Components render without a real browser.</div></div>
+      <div class="stack-card"><div class="layer">Query Helpers</div><div class="tool">Testing Library</div><div class="role">Render + query like a user: by label, role, or text — not CSS selectors.</div></div>
+      <div class="stack-card"><div class="layer">Interaction</div><div class="tool">user-event</div><div class="role">Simulate typing and clicking realistically. More accurate than <code>fireEvent</code>.</div></div>
+      <div class="stack-card"><div class="layer">Matchers</div><div class="tool">jest-dom</div><div class="role">Readable DOM matchers: <code>toBeInTheDocument()</code>, <code>toBeVisible()</code>, etc.</div></div>
+      <div class="stack-card"><div class="layer">Setup</div><div class="tool">test/setup.js</div><div class="role">Loads jest-dom + cleans the DOM after each test so tests don't bleed into each other.</div></div>
+    </div>
+
+    <p style="margin-top:26px;"><strong>8 tests in <code>ContactForm.test.jsx</code>:</strong></p>
+    <div class="test-list">
+      <div class="test-item">validate() — valid data passes with no errors</div>
+      <div class="test-item">validate() — required fields flagged when empty</div>
+      <div class="test-item">validate() — bad email format rejected</div>
+      <div class="test-item">validate() — message under 10 chars rejected</div>
+      <div class="test-item">Component renders all form fields correctly</div>
+      <div class="test-item">Empty submit is blocked and shows all error messages</div>
+      <div class="test-item">Valid submit shows the success state</div>
+      <div class="test-item">Typing in a field clears its specific error message</div>
+    </div>
+
+    <pre><span class="g">npm test</span>            <span class="c"># run once</span>
+<span class="g">npm run test:watch</span>  <span class="c"># watch mode (re-runs on save)</span></pre>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── S14: SCRIPTS ── -->
+  <section class="section" id="scripts">
+    <div class="section-header">
+      <span class="section-num">14</span>
+      <h2>Scripts &amp; Quality Workflow</h2>
+    </div>
+
+    <table class="lookup-table">
+      <thead><tr><th>Command</th><th>What happens</th></tr></thead>
+      <tbody>
+        <tr><td>npm run dev</td><td>Vite dev server with hot-reload. Changes appear instantly, no manual refresh.</td></tr>
+        <tr><td>npm run build</td><td>Optimized <code>dist/</code>: bundles &amp; minifies JS/CSS, copies <code>public/</code> (including the video).</td></tr>
+        <tr><td>npm run preview</td><td>Serve the built <code>dist/</code> locally — tests the production build before deploy.</td></tr>
+        <tr><td>npm run lint</td><td>ESLint report across all <code>src/</code> files.</td></tr>
+        <tr><td>npm run lint:fix</td><td>ESLint auto-fix everything fixable.</td></tr>
+        <tr><td>npm run format</td><td>Prettier rewrites all files to match <code>.prettierrc</code>.</td></tr>
+        <tr><td>npm run format:check</td><td>Verify formatting without writing — used in CI pipelines.</td></tr>
+        <tr><td>npm test</td><td>Vitest runs all 8 unit tests once.</td></tr>
+        <tr><td>npm run test:watch</td><td>Vitest in watch mode — re-runs on every save.</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Quality loop before every commit:</strong></p>
+
+    <div class="pipeline">
+      <div class="pipe-step fmt">
+        <div class="pipe-icon">✦</div>
+        <div class="pipe-label">FORMAT</div>
+        <div class="pipe-sub">Prettier rewrites style</div>
+      </div>
+      <div class="pipe-arrow"></div>
+      <div class="pipe-step lint">
+        <div class="pipe-icon">⚡</div>
+        <div class="pipe-label">LINT</div>
+        <div class="pipe-sub">ESLint checks correctness</div>
+      </div>
+      <div class="pipe-arrow"></div>
+      <div class="pipe-step test">
+        <div class="pipe-icon">✓</div>
+        <div class="pipe-label">TEST</div>
+        <div class="pipe-sub">Vitest runs 8 tests</div>
+      </div>
+      <div class="pipe-arrow"></div>
+      <div class="pipe-step build">
+        <div class="pipe-icon">◈</div>
+        <div class="pipe-label">BUILD</div>
+        <div class="pipe-sub">Vite compiles dist/</div>
+      </div>
+    </div>
+
+    <p style="text-align:center; color: var(--taupe); font-size:12.5px; font-style:italic; font-family: var(--font-display);">All green — safe to commit.</p>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ── S15: Q&A ── -->
+  <section class="section" id="qa">
+    <div class="section-header">
+      <span class="section-num">15</span>
+      <h2>Demo Q&amp;A — Likely Client Questions</h2>
+    </div>
+
+    <div class="qa-list">
+      <div class="qa-item">
+        <div class="qa-q">Why React?</div>
+        <div class="qa-a">Component reuse, huge ecosystem, the SPA standard. React lets you build the UI as composable pieces — a Navbar, a VideoBackground, a ContactForm — each independently testable and reusable anywhere in the app.</div>
+      </div>
+      <div class="qa-item">
+        <div class="qa-q">Why Vite instead of Create React App?</div>
+        <div class="qa-a">CRA is officially deprecated. Vite is dramatically faster at both dev startup and production build. It uses native ES modules during development so there's nothing to compile on save — changes appear instantly.</div>
+      </div>
+      <div class="qa-item">
+        <div class="qa-q">How is this a single-page application?</div>
+        <div class="qa-a">The browser loads <code>index.html</code> exactly once. React Router intercepts every link click, changes the URL in the address bar, and tells React which component to render — all without a server request. The server never sees the navigation, the page never reloads.</div>
+      </div>
+      <div class="qa-item">
+        <div class="qa-q">How is the flower video done?</div>
+        <div class="qa-a">It's a video file, <code>flower.mp4</code>, self-hosted in the <code>public/</code> folder. The development environment (cloud sandbox) had no outbound internet, so the file was downloaded manually via <code>Invoke-WebRequest</code> in the terminal and placed in <code>public/</code>. The app serves it same-origin — no CORS issues, no CDN dependency that could expire. <code>videoSource.js</code> handles reliable autoplay with retries and fallbacks.</div>
+      </div>
+      <div class="qa-item">
+        <div class="qa-q">Why did the video freeze initially?</div>
+        <div class="qa-a">The OS had "animation effects" turned off, which causes the browser to report <code>prefers-reduced-motion: reduce</code>. The code was correctly honoring that setting by pausing the video — a responsible default. But since the moving flower is the entire visual identity of the app (silent, non-interactive), we made the background always play regardless. The diagnosis was done by reading the video element's <code>readyState</code>, <code>currentTime</code>, and the reduced-motion query directly in DevTools console.</div>
+      </div>
+      <div class="qa-item">
+        <div class="qa-q">What does the code quality setup look like?</div>
+        <div class="qa-a">Three layers. ESLint catches correctness issues — undefined variables, broken hook rules, bad patterns. Prettier enforces consistent formatting — quotes, semicolons, indentation. <code>eslint-config-prettier</code> bridges them so they don't conflict. Vitest runs 8 unit tests covering both the pure validation logic and the form component's behavior. All three run as npm scripts and all must pass before a commit.</div>
+      </div>
+      <div class="qa-item">
+        <div class="qa-q">What is glassmorphism and how did you implement it?</div>
+        <div class="qa-a">Glassmorphism is a UI style where panels appear to be frosted glass — you can see the background through them, blurred. Implemented with three CSS properties: a semi-transparent background (<code>rgba</code>), <code>backdrop-filter: blur()</code> which blurs whatever's behind the element, and a thin translucent border. Because the background is a live video, the blur diffuses the moving flowers through each panel in real time.</div>
+      </div>
+      <div class="qa-item">
+        <div class="qa-q">How does the form validation work?</div>
+        <div class="qa-a">The validation logic is a pure JavaScript function in <code>contactValidation.js</code> — no React, no DOM. It takes the form values and returns an errors object. The form component calls it on submit and displays errors inline. As the user types, each field's error clears immediately. This separation means the validation logic is independently testable and reusable in any other form without touching the UI code.</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  const sections = document.querySelectorAll('.section, .hero');
+  const navItems = document.querySelectorAll('.nav-item');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navItems.forEach(item => {
+          item.classList.toggle('active', item.getAttribute('href') === `#${id}`);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

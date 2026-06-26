@@ -320,6 +320,17 @@
   z-index: 2;
 }
 
+/* Scroll spacers that pace the hero -> cards -> reveal choreography */
+.veldara-page .spacer-lg {
+  height: 150vh;
+}
+.veldara-page .spacer-md {
+  height: 100vh;
+}
+.veldara-page #cards-trigger {
+  height: 200vh;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .veldara-page .veldara-nav {
