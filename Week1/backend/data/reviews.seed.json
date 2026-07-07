@@ -1,0 +1,50 @@
+[
+  {
+    "id": "a1b2c3d4e5f64a7b8c9d0e1f2a3b4c5d",
+    "created_at": "2026-07-01T10:00:00+00:00",
+    "name": "Maya Okonkwo",
+    "role": "Frontend Lead, Northwind",
+    "quote": "Veldara made it absurdly easy to drop a real 3D scene into our marketing site. The scroll-driven bloom is the first thing every visitor mentions.",
+    "stars": 5
+  },
+  {
+    "id": "b2c3d4e5f6a74b8c9d0e1f2a3b4c5d6e",
+    "created_at": "2026-07-01T11:00:00+00:00",
+    "name": "Daniel Roth",
+    "role": "Creative Engineer, Studio Kite",
+    "quote": "The declarative Three.js API is a joy. We shipped an interactive product hero in a single afternoon instead of a sprint.",
+    "stars": 5
+  },
+  {
+    "id": "c3d4e5f6a7b84c9d0e1f2a3b4c5d6e7f",
+    "created_at": "2026-07-01T12:00:00+00:00",
+    "name": "Priya Nair",
+    "role": "Accessibility Consultant",
+    "quote": "Performance was my worry with WebGL, but Veldara stays smooth even on mid-range laptops. The glassmorphic, keyboard-friendly UI is a thoughtful touch.",
+    "stars": 4
+  },
+  {
+    "id": "d4e5f6a7b8c94d0e1f2a3b4c5d6e7f8a",
+    "created_at": "2026-07-01T13:00:00+00:00",
+    "name": "Lukas Berg",
+    "role": "Design Director, Atlas",
+    "quote": "Glassmorphic pages over a single living background gave our whole site a cohesive, premium feel with almost no extra work.",
+    "stars": 5
+  },
+  {
+    "id": "e5f6a7b8c9d04e1f2a3b4c5d6e7f8a9b",
+    "created_at": "2026-07-01T14:00:00+00:00",
+    "name": "Sofia Marchetti",
+    "role": "Engineering Manager, Verve",
+    "quote": "Clean codebase, sensible defaults, and the docs actually match the API. Onboarding two juniors took an hour.",
+    "stars": 5
+  },
+  {
+    "id": "f6a7b8c9d0e14f2a3b4c5d6e7f8a9b0c",
+    "created_at": "2026-07-01T15:00:00+00:00",
+    "name": "Tom Whitaker",
+    "role": "Founder, Pixelforge",
+    "quote": "From install to a deployed 3D landing page in a day. Veldara is now our default for anything that needs to feel dimensional.",
+    "stars": 5
+  }
+]

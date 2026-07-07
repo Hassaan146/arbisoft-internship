@@ -19,3 +19,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Python backend
+backend/.venv
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+# Runtime data store (recreated from the seed on first run)
+backend/data/reviews.json

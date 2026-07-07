@@ -321,3 +321,63 @@ Test → Build**; all green = safe to commit.
   made the background always play.
 - **Code quality?** ESLint (correctness) + Prettier (format, bridged by
   eslint-config-prettier) + Vitest unit tests, all as npm scripts.
+
+---
+
+## 16. Backend — the Reviews CRUD API (`backend/`)
+
+The Reviews page is no longer static: a small **FastAPI** (Python) service
+owns the review data and exposes it as a REST API. The frontend and backend
+are two independent programs joined by one contract — JSON over `/api/*`.
+
+### The layered architecture
+
+```
+HTTP request
+  └─ app/main.py            edge: CORS allowlist, rate limiting, security
+     │                      headers, global error handlers
+  └─ app/api/routes/        controllers: parse/validate input, call ONE
+     │  reviews.py          service method, pick the status code
+  └─ app/services/          business logic: pagination, "not found" rules —
+     │  review_service.py   knows nothing about HTTP
+  └─ app/repositories/      data access: ReviewRepository interface +
+        review_repository.py  a JSON-file implementation (atomic writes)
+```
+
+Dependencies point inward only. The service depends on the repository
+*interface*, not the JSON implementation — swapping in SQLite/Postgres later
+means writing one new repository class and changing one wiring line
+(`app/api/deps.py`).
+
+### Validation — Pydantic as the boundary
+
+Every request body is parsed against `app/schemas/review.py` before any code
+runs: name 2–80 chars, role 2–120, quote 10–1000, stars an integer 1–5.
+Anything else is rejected with a `422` at the edge. Client-supplied `id` /
+`created_at` fields are ignored — the server owns identity.
+
+### Endpoints
+
+`GET/POST /api/reviews`, `GET/PUT/DELETE /api/reviews/{id}`, plus
+`GET /api/health`. List responses are paginated (`limit`/`offset`) and return
+an `{ items, total, limit, offset }` envelope. Swagger docs are served at
+`/api/docs`.
+
+### How the frontend connects
+
+- **Dev wiring:** `vite.config.js` proxies `/api` → `http://localhost:8001`,
+  so the SPA calls same-origin paths and CORS never bites in dev.
+- **`src/services/reviewsApi.js`** — the only module that touches `fetch`.
+- **`src/hooks/useReviews.js`** — loads reviews, exposes
+  `loading / live / offline` status; on `offline` the page gracefully falls
+  back to the bundled sample reviews.
+- **`src/components/ReviewForm.jsx`** — POSTs new reviews; client-side checks
+  mirror the Pydantic rules for instant feedback, and the server re-validates.
+
+### Backend quality loop
+
+**Ruff** (lint + format, rules E/W/F/I/B/UP/SIM/C4/RUF in
+`backend/pyproject.toml`) and **pytest** (26 tests: full CRUD integration
+through FastAPI's TestClient + repository unit tests, each against a fresh
+temp data file). Same philosophy as the frontend: Format → Lint → Test before
+every commit.

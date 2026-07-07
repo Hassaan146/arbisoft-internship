@@ -535,3 +535,18 @@ I want you to review the code. There should be two agents first. What should be 
 These are the things you must do, and then provide me the report, and then I'll tell you what the next thing
  use the token optimization skill you have so that you should use less tokens.
 
+
+## Week 3 backend task (done on the week-1 branch): Reviews CRUD API
+
+```
+This is my week 1 project. I want to add a simple CRUD API in the backend,
+which is my week 3 task.
+- Add the review CRUD API in the code.
+- Add modularity and architecture in the code.
+- The course will be fully documented.
+- Use the AI coding rules skill (vibe-coding-rules).
+- Use Ruff for the backend linting.
+- Write backend tests for the CRUD APIs.
+- Validate inputs through Pydantic.
+- Do all of these things in the week-1 branch and add a professional commit.
+```

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import About from './About.jsx';
@@ -19,12 +19,51 @@ describe('<About />', () => {
 });
 
 describe('<Reviews />', () => {
-  it('renders one rated card per review', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('renders reviews from the API when it responds', async () => {
+    const page = {
+      items: [
+        {
+          id: 'r1',
+          name: 'Test Reviewer',
+          role: 'QA, Example Co',
+          quote: 'Fetched straight from the backend API.',
+          stars: 4,
+          created_at: '2026-07-01T10:00:00Z',
+        },
+      ],
+      total: 1,
+      limit: 50,
+      offset: 0,
+    };
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(page),
+      })
+    );
+
     render(<Reviews />);
-    expect(screen.getByText(reviews[0].name)).toBeInTheDocument();
+    expect(await screen.findByText('Test Reviewer')).toBeInTheDocument();
+    expect(screen.getAllByLabelText(/out of 5 stars/i)).toHaveLength(1);
+    // The submit form only appears when the backend is live.
+    expect(
+      screen.getByRole('button', { name: /publish review/i })
+    ).toBeInTheDocument();
+  });
+
+  it('falls back to bundled sample reviews when the API is unreachable', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')));
+
+    render(<Reviews />);
+    expect(await screen.findByText(reviews[0].name)).toBeInTheDocument();
     expect(screen.getAllByLabelText(/out of 5 stars/i)).toHaveLength(
       reviews.length
     );
+    expect(screen.getByText(/showing a sample/i)).toBeInTheDocument();
   });
 });
 
