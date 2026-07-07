@@ -1,19 +1,8 @@
 import { useState } from 'react';
 import { createReview } from '../services/reviewsApi.js';
+import { validateReview, toReviewPayload } from '../utils/reviewValidation.js';
 
 const initialValues = { name: '', role: '', quote: '', stars: '5' };
-
-// Client-side checks mirror the backend's Pydantic constraints. They exist
-// for instant feedback only — the server re-validates every request.
-function validate(values) {
-  const errors = {};
-  if (values.name.trim().length < 2) errors.name = 'Please enter your name.';
-  if (values.role.trim().length < 2)
-    errors.role = 'Please add your role or company.';
-  if (values.quote.trim().length < 10)
-    errors.quote = 'Reviews need at least 10 characters.';
-  return errors;
-}
 
 /**
  * "Share your experience" form. POSTs to the reviews API and passes the
@@ -39,19 +28,14 @@ export default function ReviewForm({ onCreated }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const found = validate(values);
+    const found = validateReview(values);
     setErrors(found);
     if (Object.keys(found).length > 0) return;
 
     setSubmitting(true);
     setSubmitError('');
     try {
-      const created = await createReview({
-        name: values.name.trim(),
-        role: values.role.trim(),
-        quote: values.quote.trim(),
-        stars: Number(values.stars),
-      });
+      const created = await createReview(toReviewPayload(values));
       setSubmitted(true);
       setValues(initialValues);
       if (onCreated) onCreated(created);

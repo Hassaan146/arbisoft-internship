@@ -369,10 +369,16 @@ an `{ items, total, limit, offset }` envelope. Swagger docs are served at
   so the SPA calls same-origin paths and CORS never bites in dev.
 - **`src/services/reviewsApi.js`** — the only module that touches `fetch`.
 - **`src/hooks/useReviews.js`** — loads reviews, exposes
-  `loading / live / offline` status; on `offline` the page gracefully falls
-  back to the bundled sample reviews.
-- **`src/components/ReviewForm.jsx`** — POSTs new reviews; client-side checks
-  mirror the Pydantic rules for instant feedback, and the server re-validates.
+  `loading / live / error` status plus `addReview` / `replaceReview` list
+  updaters. All review data comes from the API — nothing is hard-coded; if
+  the backend is down the page shows an availability notice.
+- **`src/components/ReviewForm.jsx`** — POSTs new reviews.
+- **`src/components/ReviewCard.jsx`** — each card has a pencil button
+  (top-right) that flips it into an inline edit form and PUTs the changes.
+  There is deliberately no auth in this build, so anyone can edit any review.
+- **`src/utils/reviewValidation.js`** — client-side checks shared by both
+  forms; they mirror the Pydantic rules for instant feedback, and the server
+  re-validates every request.
 
 ### Backend quality loop
 

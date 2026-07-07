@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useState } from 'react';
 import { listReviews } from '../services/reviewsApi.js';
-import { reviews as fallbackReviews } from '../data/reviews.js';
 
 /**
  * Loads reviews from the API and exposes them with a load status.
  *
  * Status is one of:
- *  - 'loading'  — initial fetch in flight
- *  - 'live'     — data came from the backend
- *  - 'offline'  — backend unreachable; showing the bundled sample reviews
+ *  - 'loading' — initial fetch in flight
+ *  - 'live'    — data came from the backend
+ *  - 'error'   — backend unreachable; nothing to show
  *
- * `addReview(review)` prepends a newly created review to the list.
+ * `addReview(review)` prepends a newly created review;
+ * `replaceReview(review)` swaps an edited review in place.
  */
 export function useReviews() {
   const [reviews, setReviews] = useState([]);
@@ -25,10 +25,8 @@ export function useReviews() {
         setStatus('live');
       })
       .catch(() => {
-        // Graceful degradation: the page still works without the backend.
         if (cancelled) return;
-        setReviews(fallbackReviews);
-        setStatus('offline');
+        setStatus('error');
       });
     return () => {
       cancelled = true;
@@ -39,5 +37,11 @@ export function useReviews() {
     setReviews((current) => [review, ...current]);
   }, []);
 
-  return { reviews, status, addReview };
+  const replaceReview = useCallback((review) => {
+    setReviews((current) =>
+      current.map((r) => (r.id === review.id ? review : r))
+    );
+  }, []);
+
+  return { reviews, status, addReview, replaceReview };
 }

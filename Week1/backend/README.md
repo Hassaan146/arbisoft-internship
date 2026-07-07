@@ -73,9 +73,10 @@ service knows nothing about HTTP; the repository knows nothing about reviews'
 HTTP contract. Swapping the JSON store for SQLite/Postgres means writing one
 new repository class.
 
-**Storage:** `data/reviews.json` (created on first run from
+**Storage:** `data/reviews.json` (created empty on first run from
 `data/reviews.seed.json`; git-ignored so runtime data never lands in
-commits).
+commits). There are no pre-planted reviews — every review is user-created
+through the API.
 
 **Configuration:** every setting can be overridden with a `VELDARA_`-prefixed
 environment variable, e.g. `VELDARA_DATA_FILE`, `VELDARA_CORS_ORIGINS`,

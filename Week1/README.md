@@ -34,8 +34,9 @@ moving background.
   autoplaying flower video, a drifting particle field, scroll-revealed
   cards, and a final reveal — its own full-bleed layout
 - `/about` — How the project was made (glassmorphism)
-- `/reviews` — Website reviews, loaded live from the backend API with a
-  submit form; falls back to bundled samples if the API is down (glassmorphism)
+- `/reviews` — Website reviews, loaded live from the backend API; anyone can
+  publish a review or edit any card via its pencil button (no auth by
+  design). Shows an availability notice if the API is down (glassmorphism)
 - `/contact` — Contact form with client-side validation (glassmorphism)
 - `*` — 404 fallback
 
@@ -46,19 +47,19 @@ src/
   components/  layout/  (Layout, Navbar)
                ui/      (GlassCard, PageHead, FeatureCard, Stars, SocialLinks)
                VideoBackground.jsx  ContactForm.jsx  ReviewForm.jsx
-               ErrorBoundary.jsx
+               ReviewCard.jsx  ErrorBoundary.jsx
   hooks/       useAutoplayVideo  useParticles  useHeroFade
                useCardScrollMask  useScrollReveal  useReviews
   services/    reviewsApi.js  (all backend calls live here)
-  data/        about  reviews  contactPoints  landingCards
+  data/        about  contactPoints  landingCards
   pages/       Landing (+ Landing.css)  About  Reviews  Contact  NotFound
-  utils/       contactValidation.js
+  utils/       contactValidation.js  reviewValidation.js
   videoSource.js   index.css   App.jsx   main.jsx
 backend/
   app/         FastAPI service: main (factory) → api/routes → services
                → repositories, with Pydantic schemas and env-based config
   tests/       pytest suite (API integration + repository unit tests)
-  data/        reviews.seed.json (committed) → reviews.json (runtime)
+  data/        reviews.seed.json (empty; committed) → reviews.json (runtime)
 ```
 
 See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for a full conceptual walkthrough
@@ -80,8 +81,8 @@ python -m venv .venv
 .venv\Scripts\python -m uvicorn app.main:app --reload --port 8001
 ```
 
-The Reviews page works either way — live data with the backend running,
-bundled sample data without it.
+All review data lives in the backend — there are no hard-coded reviews.
+Without the backend running, the Reviews page shows an availability notice.
 
 ## Scripts
 

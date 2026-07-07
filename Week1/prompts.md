@@ -550,3 +550,11 @@ which is my week 3 task.
 - Validate inputs through Pydantic.
 - Do all of these things in the week-1 branch and add a professional commit.
 ```
+
+## Reviews follow-up: remove seeded data + inline editing
+
+```
+1. Remove all the fake / pre-planted / hard-coded reviews.
+2. Add an edit option: a pencil button on the top right of every review card
+   so anyone can edit any review (no login, no authentication, by design).
+```

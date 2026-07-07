@@ -1,9 +1,10 @@
-import { PageHead, GlassCard, Stars } from '../components/ui/index.js';
+import { PageHead } from '../components/ui/index.js';
+import ReviewCard from '../components/ReviewCard.jsx';
 import ReviewForm from '../components/ReviewForm.jsx';
 import { useReviews } from '../hooks/index.js';
 
 export default function Reviews() {
-  const { reviews, status, addReview } = useReviews();
+  const { reviews, status, addReview, replaceReview } = useReviews();
 
   return (
     <div className="container section">
@@ -20,26 +21,25 @@ export default function Reviews() {
           Loading reviews…
         </p>
       )}
-      {status === 'offline' && (
+      {status === 'error' && (
         <p className="muted" role="status">
-          Live reviews are unavailable right now — showing a sample instead.
+          Reviews are unavailable right now — please try again later.
+        </p>
+      )}
+      {status === 'live' && reviews.length === 0 && (
+        <p className="muted" role="status">
+          No reviews yet — be the first to share your experience below.
         </p>
       )}
 
       <div className="feature-grid">
         {reviews.map((r) => (
-          <GlassCard
-            as="article"
-            className="feature review"
+          <ReviewCard
             key={r.id ?? r.name}
-          >
-            <Stars count={r.stars} />
-            <p className="review-quote">“{r.quote}”</p>
-            <div className="review-who">
-              <strong>{r.name}</strong>
-              <span className="muted">{r.role}</span>
-            </div>
-          </GlassCard>
+            review={r}
+            editable={status === 'live'}
+            onUpdated={replaceReview}
+          />
         ))}
       </div>
 
