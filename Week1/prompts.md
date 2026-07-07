@@ -558,3 +558,17 @@ which is my week 3 task.
 2. Add an edit option: a pencil button on the top right of every review card
    so anyone can edit any review (no login, no authentication, by design).
 ```
+
+## Week 1 — Summary of what was built
+
+Week 1 delivered the **Veldara front end** (landing page + About / Contact /
+Reviews pages with client-side routing and a scroll-driven 3D-style video hero)
+plus a **Reviews CRUD REST API** on the backend:
+
+- **CRUD REST API** for the Reviews resource (Create / Read / Update / Delete).
+- **FastAPI + Pydantic** input validation, in a layered, modular, documented
+  architecture (built following the vibe-coding-rules skill).
+- **Ruff** backend linting with a clean pass, and **pytest** tests for the CRUD
+  endpoints.
+- Anonymous **inline review editing** (a pencil button on each card — no login,
+  by design) and removal of all seeded/hard-coded reviews.
