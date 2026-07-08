@@ -35,6 +35,6 @@ export interface AuthToken {
 export interface AdminStats {
   total_users: number;
   users_logged_in: number;
-  total_login_events: number;
+  total_logins: number;
   total_notes: number;
 }

@@ -43,11 +43,11 @@ class UserRepository:
         """Total number of registered users."""
         return self._db.scalar(select(func.count()).select_from(User)) or 0
 
-    def users_who_logged_in(self) -> int:
+    def total_login_events(self) -> int:
         """How many distinct users have logged in at least once."""
         stmt = select(func.count()).select_from(User).where(User.login_count > 0)
         return self._db.scalar(stmt) or 0
 
-    def total_login_events(self) -> int:
+    def total_logins(self) -> int:
         """Sum of every user's login count — the total number of logins ever."""
         return self._db.scalar(select(func.coalesce(func.sum(User.login_count), 0))) or 0
