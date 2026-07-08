@@ -1,0 +1,12 @@
+# GitGuardian configuration.
+# https://docs.gitguardian.com/ggshield-docs/reference/config
+#
+# The backend unit tests use dummy username/PIN pairs (e.g. "alice"/"1234") as
+# fixtures against a throwaway in-memory database. They are not real
+# credentials, so we exclude the test directory from secret scanning to stop
+# the "Username Password" detector raising false positives.
+version: 2
+
+secret:
+  ignored-paths:
+    - "Week2/notesapp/backend/tests/**"
