@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ArrowRight, X } from 'lucide-react';
+import { PIN_LENGTH, PIN_REGEX, USERNAME_MIN_LENGTH } from '../constants';
 import type { Credentials } from '../types';
 
 export type AuthMode = 'register' | 'login' | 'reset';
@@ -56,16 +57,16 @@ export default function AuthModal({
     onModeChange(next);
   }
 
-  const onlyDigits = (value: string) => value.replace(/\D/g, '').slice(0, 4);
+  const onlyDigits = (value: string) => value.replace(/\D/g, '').slice(0, PIN_LENGTH);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    if (username.trim().length < 3) {
-      setError('Username must be at least 3 characters.');
+    if (username.trim().length < USERNAME_MIN_LENGTH) {
+      setError(`Username must be at least ${USERNAME_MIN_LENGTH} characters.`);
       return;
     }
-    if (!/^\d{4}$/.test(pin)) {
-      setError('PIN must be exactly 4 digits.');
+    if (!PIN_REGEX.test(pin)) {
+      setError(`PIN must be exactly ${PIN_LENGTH} digits.`);
       return;
     }
     if (isReset && pin !== confirmPin) {
@@ -75,6 +76,8 @@ export default function AuthModal({
 
     setError(null);
     setBusy(true);
+    // The UI concept is a "PIN"; the API credential field is `password`. We map
+    // the PIN onto that field here, at the single API boundary.
     const creds: Credentials = { username: username.trim(), password: pin };
     try {
       if (mode === 'register') {

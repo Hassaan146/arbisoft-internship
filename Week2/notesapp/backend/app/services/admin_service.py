@@ -17,7 +17,7 @@ class AdminService:
         """Return counts only: users, how many have logged in, total logins, notes."""
         return AdminStats(
             total_users=self._users.count(),
-            users_logged_in=self._users.count_logged_in(),
-            total_logins=self._users.total_logins(),
+            users_logged_in=self._users.users_who_logged_in(),
+            total_login_events=self._users.total_login_events(),
             total_notes=self._notes.count_all(),
         )

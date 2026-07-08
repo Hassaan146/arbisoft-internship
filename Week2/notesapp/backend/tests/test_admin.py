@@ -21,7 +21,12 @@ def test_admin_can_read_stats(client: TestClient, admin_headers: dict) -> None:
     assert resp.status_code == 200
     stats = resp.json()
     # counts only — no note contents anywhere in the payload
-    assert set(stats) == {"total_users", "users_logged_in", "total_logins", "total_notes"}
+    assert set(stats) == {
+        "total_users",
+        "users_logged_in",
+        "total_login_events",
+        "total_notes",
+    }
 
 
 def test_admin_stats_reflect_activity(

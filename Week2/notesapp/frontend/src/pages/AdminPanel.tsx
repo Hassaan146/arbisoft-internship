@@ -30,7 +30,7 @@ export default function AdminPanel({ onBack, onLogout }: AdminPanelProps) {
     ? [
         { label: 'Total users', value: stats.total_users, Icon: Users },
         { label: 'Users logged in', value: stats.users_logged_in, Icon: LogIn },
-        { label: 'Total logins', value: stats.total_logins, Icon: LogIn },
+        { label: 'Total logins', value: stats.total_login_events, Icon: LogIn },
         { label: 'Total notes', value: stats.total_notes, Icon: FileText },
       ]
     : [];

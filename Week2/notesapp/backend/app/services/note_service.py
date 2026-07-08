@@ -1,10 +1,10 @@
 """Note business logic.
 
-Enforces that a note is only reachable through its owner: every operation
-checks that the note's owner_id matches the owner_id taken from the request
-path. There is NO session authentication yet, so this does not authenticate
-the caller — it only prevents reaching a note via the *wrong* path. A caller
-who supplies another user's id in the path is still trusted to be that user.
+Enforces ownership: every operation checks that a note's owner_id matches the
+owner_id it is given. That owner_id is the *authenticated* user's id — the
+routers derive it from the verified JWT (see `dependencies.get_current_user`),
+never from client-supplied input — so this is genuine authorization: a user can
+only ever reach their own notes.
 """
 
 from sqlalchemy.orm import Session
@@ -32,15 +32,15 @@ class NoteService:
     def _require_owned_note(self, owner_id: int, note_id: int) -> Note:
         """Return the note only if it exists AND belongs to owner_id.
 
-        owner_id comes from the request path, not from an authenticated session,
-        so this is an ownership/path check rather than true authorization: it
-        ensures a note is only reachable under its owner's path, but does not
-        verify the caller *is* that owner. Treating "not owned" identically to
-        "not found" still avoids leaking whether another id's notes exist.
+        owner_id is the authenticated user's id (from the JWT), so this enforces
+        that a user can only reach their own notes. A note owned by someone else
+        is reported as "not found" (not "forbidden") so we never leak whether
+        another user's note id exists.
         """
         note = self._notes.get(note_id)
         if note is None or note.owner_id != owner_id:
             raise NotFoundError(f"note {note_id} not found for user {owner_id}")
+
         return note
 
     def list(self, owner_id: int, limit: int = 50, offset: int = 0) -> list[Note]:
@@ -70,6 +70,7 @@ class NoteService:
         """
         note = self._require_owned_note(owner_id, note_id)
         data = payload.model_dump(exclude_unset=True)
+
         for field, value in data.items():
             setattr(note, field, value)
         self._db.commit()
