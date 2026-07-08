@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notes Backend — Explained Conceptually</title>
+    <style>
+      :root {
+        /* Soft seashell + dusty mauve palette */
+        --seashell: #fff5ee;
+        --seashell-deep: #f6e3d8;
+        --card: #fffbf8;
+        --mauve: #a67f8e;
+        --mauve-soft: #c9a9b3;
+        --mauve-deep: #7a5563;
+        --mauve-ink: #4a333d;
+        --line: #e7d3c9;
+        --shadow: rgba(122, 85, 99, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--seashell);
+        color: var(--mauve-ink);
+        font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+        line-height: 1.6;
+      }
+
+      .wrap {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 48px 24px 80px;
+      }
+
+      /* Hero */
+      .hero {
+        text-align: center;
+        padding: 40px 24px 48px;
+        background: linear-gradient(160deg, var(--seashell-deep), var(--seashell));
+        border-radius: 22px;
+        border: 1px solid var(--line);
+        box-shadow: 0 18px 40px -20px var(--shadow);
+      }
+      .hero .eyebrow {
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        color: var(--mauve);
+        font-weight: 700;
+        margin: 0 0 12px;
+      }
+      .hero h1 {
+        margin: 0 0 12px;
+        font-size: 2.3rem;
+        color: var(--mauve-deep);
+      }
+      .hero p {
+        margin: 0 auto;
+        max-width: 560px;
+        color: var(--mauve);
+      }
+
+      h2 {
+        color: var(--mauve-deep);
+        font-size: 1.5rem;
+        margin: 56px 0 8px;
+      }
+      .lead {
+        color: var(--mauve);
+        margin: 0 0 24px;
+      }
+
+      /* Flow diagram */
+      .flow {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+      .flow-step {
+        display: grid;
+        grid-template-columns: 132px 1fr;
+        gap: 18px;
+        align-items: center;
+      }
+      .flow-badge {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-left: 5px solid var(--mauve);
+        border-radius: 12px;
+        padding: 12px 10px;
+        text-align: center;
+        font-weight: 700;
+        color: var(--mauve-deep);
+        font-size: 0.9rem;
+        box-shadow: 0 8px 20px -14px var(--shadow);
+      }
+      .flow-desc {
+        padding: 6px 0;
+        color: var(--mauve-ink);
+      }
+      .flow-desc strong {
+        color: var(--mauve-deep);
+      }
+      .flow-arrow {
+        grid-column: 1 / 2;
+        justify-self: center;
+        color: var(--mauve-soft);
+        font-size: 1.3rem;
+        line-height: 1;
+        margin: 4px 0;
+      }
+
+      /* Layer cards */
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 18px;
+        margin-top: 12px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 20px 22px;
+        box-shadow: 0 14px 30px -22px var(--shadow);
+      }
+      .card h3 {
+        margin: 0 0 4px;
+        color: var(--mauve-deep);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1.12rem;
+      }
+      .card .role {
+        display: inline-block;
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #fff;
+        background: var(--mauve);
+        border-radius: 999px;
+        padding: 2px 10px;
+        margin-bottom: 12px;
+        font-weight: 700;
+      }
+      .card ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+      .card li {
+        margin: 6px 0;
+      }
+      .card li b {
+        color: var(--mauve-deep);
+      }
+      .file {
+        font-family: "Consolas", "SFMono-Regular", monospace;
+        font-size: 0.82rem;
+        color: var(--mauve);
+        background: var(--seashell-deep);
+        padding: 1px 7px;
+        border-radius: 6px;
+      }
+
+      /* Rules strip */
+      .rules {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 8px 24px;
+        margin-top: 12px;
+        box-shadow: 0 14px 30px -22px var(--shadow);
+      }
+      .rules .row {
+        display: flex;
+        gap: 16px;
+        padding: 14px 0;
+        border-bottom: 1px dashed var(--line);
+        align-items: baseline;
+      }
+      .rules .row:last-child {
+        border-bottom: none;
+      }
+      .code {
+        flex: 0 0 64px;
+        font-weight: 800;
+        color: var(--mauve-deep);
+        font-family: "Consolas", monospace;
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 64px;
+        color: var(--mauve-soft);
+        font-size: 0.85rem;
+      }
+
+      @media (max-width: 560px) {
+        .flow-step {
+          grid-template-columns: 100px 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="hero">
+        <p class="eyebrow">Notes App · Backend</p>
+        <h1>How the backend works</h1>
+        <p>
+          A conceptual map of the FastAPI backend — what each part is for and how a single
+          request travels through it. No code, just the ideas.
+        </p>
+      </header>
+
+      <!-- The idea -->
+      <h2>The one big idea</h2>
+      <p class="lead">
+        The backend is a <strong>kitchen with stations</strong>. Every request is an order that
+        passes through stations one by one — each does a single job and hands off to the next.
+        Splitting the work this way keeps every piece small, testable, and safe to change on its
+        own.
+      </p>
+
+      <!-- Request lifecycle -->
+      <h2>The journey of one request</h2>
+      <p class="lead">Example: “Create a note for user 5.”</p>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-badge">Router</div>
+          <div class="flow-desc">
+            <strong>The waiter.</strong> Receives the request at a URL and hands the incoming data
+            to the bouncer for checking.
+          </div>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">
+          <div class="flow-badge">Schema</div>
+          <div class="flow-desc">
+            <strong>The bouncer.</strong> Validates the data — no blank title, no over-long text.
+            Bad input is turned away immediately.
+          </div>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">
+          <div class="flow-badge">Service</div>
+          <div class="flow-desc">
+            <strong>The manager.</strong> Applies the rules: does user 5 exist? Does this note
+            belong to them? Then decides to save.
+          </div>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">
+          <div class="flow-badge">Repository</div>
+          <div class="flow-desc">
+            <strong>The librarian.</strong> The only station allowed to talk to the database. It
+            just fetches and stores — no decisions.
+          </div>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">
+          <div class="flow-badge">Model &amp; DB</div>
+          <div class="flow-desc">
+            <strong>The shelves.</strong> The note is written as a real database row, then travels
+            back out — shaped into clean JSON by a schema.
+          </div>
+        </div>
+      </div>
+
+      <!-- Layers in detail -->
+      <h2>Each station, and what its functions do</h2>
+      <div class="cards">
+        <div class="card">
+          <span class="role">What things are</span>
+          <h3>Models <span class="file">models.py</span></h3>
+          <ul>
+            <li><b>User</b> — a person who owns notes.</li>
+            <li><b>Note</b> — a single note that always belongs to one user.</li>
+            <li>
+              Defines the core link: <b>one user → many notes</b>, and a note can never exist
+              without an owner.
+            </li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <span class="role">The bouncer</span>
+          <h3>Schemas <span class="file">schemas.py</span></h3>
+          <ul>
+            <li><b>Trim &amp; reject blanks</b> — clean the title, refuse empty ones.</li>
+            <li><b>Note shapes</b> — separate forms for create, edit, and read.</li>
+            <li>
+              <b>User-with-first-note</b> — creating a user <i>requires</i> a first note, which is
+              how “every user has at least one note” is guaranteed at the door.
+            </li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <span class="role">The librarians</span>
+          <h3>Repositories <span class="file">repositories/</span></h3>
+          <ul>
+            <li><b>Find</b> — by id, or by username.</li>
+            <li><b>List</b> — a user’s notes, one page at a time.</li>
+            <li><b>Count</b> — how many notes a user has (cheaply).</li>
+            <li><b>Save / Remove</b> — write or delete rows. No rules here.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <span class="role">The brain</span>
+          <h3>Services <span class="file">services/</span></h3>
+          <ul>
+            <li><b>Create user</b> — block duplicate names; make user + first note together.</li>
+            <li><b>Ownership guard</b> — a note not owned by you is treated as “not found.”</li>
+            <li><b>CRUD</b> — create, read, update, delete notes.</li>
+            <li><b>Last-note rule</b> — refuse to delete a user’s final note.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <span class="role">The waiters</span>
+          <h3>Routers <span class="file">routers/</span></h3>
+          <ul>
+            <li><b>Define the URLs</b> — <span class="file">/users</span>, <span class="file">/users/&#123;id&#125;/notes</span>.</li>
+            <li><b>Carry the order</b> — call the manager, return the reply.</li>
+            <li>Hold <b>no logic</b> — deliberately thin.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <span class="role">The building</span>
+          <h3>App setup <span class="file">main.py</span></h3>
+          <ul>
+            <li><b>Assembles</b> all the stations into one app.</li>
+            <li><b>House rules</b> — CORS, rate limiting, security headers.</li>
+            <li><b>Error translator</b> — turns internal errors into HTTP codes.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <span class="role">The plumbing</span>
+          <h3>Support files</h3>
+          <ul>
+            <li><span class="file">config.py</span> — settings from the environment.</li>
+            <li><span class="file">database.py</span> — opens/closes a DB session per request.</li>
+            <li><span class="file">dependencies.py</span> — hands each waiter a ready manager.</li>
+            <li><span class="file">exceptions.py</span> — the vocabulary of errors.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <span class="role">Confidence</span>
+          <h3>Tests <span class="file">tests/</span></h3>
+          <ul>
+            <li>Prove CRUD works end to end.</li>
+            <li>Prove validation rejects bad input.</li>
+            <li>Prove one user cannot reach another’s notes.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Status codes -->
+      <h2>How the app answers back</h2>
+      <p class="lead">
+        Every outcome maps to a standard HTTP status code, so any client knows exactly what
+        happened.
+      </p>
+      <div class="rules">
+        <div class="row"><span class="code">201</span><span>A note or user was <b>created</b>.</span></div>
+        <div class="row"><span class="code">200</span><span>A read or update <b>succeeded</b>.</span></div>
+        <div class="row"><span class="code">204</span><span>Something was <b>deleted</b> — nothing to return.</span></div>
+        <div class="row"><span class="code">404</span><span>Not found — or not yours to see.</span></div>
+        <div class="row"><span class="code">409</span><span>That username is already <b>taken</b>.</span></div>
+        <div class="row"><span class="code">422</span><span>The input broke a <b>rule</b> (blank title, deleting the last note).</span></div>
+        <div class="row"><span class="code">429</span><span>Too many requests — please <b>slow down</b>.</span></div>
+      </div>
+
+      <footer>Notes App · conceptual backend guide</footer>
+    </div>
+  </body>
+</html>
