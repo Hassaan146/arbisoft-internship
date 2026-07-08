@@ -33,6 +33,9 @@ def test_tampered_token_is_rejected() -> None:
 
 
 def test_wrong_secret_is_rejected() -> None:
-    forged = jwt.encode({"sub": "1", "role": "admin"}, "some-other-secret", algorithm="HS256")
+    # Key must be >= 32 bytes or PyJWT (>=2.13) emits InsecureKeyLengthWarning.
+    forged = jwt.encode(
+        {"sub": "1", "role": "admin"}, "a-completely-different-secret-key-value", algorithm="HS256"
+    )
     with pytest.raises(InvalidTokenError):
         decode_access_token(forged)
