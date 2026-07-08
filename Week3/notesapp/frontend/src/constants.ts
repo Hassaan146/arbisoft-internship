@@ -8,3 +8,5 @@
 export const PIN_LENGTH = 4;
 export const PIN_REGEX = /^\d{4}$/;
 export const USERNAME_MIN_LENGTH = 3;
+export const USERNAME_MAX_LENGTH = 50;
+export const USERNAME_PATTERN = /^[A-Za-z0-9_]+$/;

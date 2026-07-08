@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { ArrowRight, X } from 'lucide-react';
-import { PIN_LENGTH, PIN_REGEX, USERNAME_MIN_LENGTH } from '../constants';
+import {
+  PIN_LENGTH,
+  PIN_REGEX,
+  USERNAME_MIN_LENGTH,
+  USERNAME_MAX_LENGTH,
+  USERNAME_PATTERN,
+} from '../constants';
 import type { Credentials } from '../types';
 
 export type AuthMode = 'register' | 'login' | 'reset';
@@ -61,8 +67,17 @@ export default function AuthModal({
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    if (username.trim().length < USERNAME_MIN_LENGTH) {
+    const trimmedUsername = username.trim();
+    if (trimmedUsername.length < USERNAME_MIN_LENGTH) {
       setError(`Username must be at least ${USERNAME_MIN_LENGTH} characters.`);
+      return;
+    }
+    if (trimmedUsername.length > USERNAME_MAX_LENGTH) {
+      setError(`Username must not exceed ${USERNAME_MAX_LENGTH} characters.`);
+      return;
+    }
+    if (!USERNAME_PATTERN.test(trimmedUsername)) {
+      setError('Username must contain only letters, numbers, and underscores.');
       return;
     }
     if (!PIN_REGEX.test(pin)) {

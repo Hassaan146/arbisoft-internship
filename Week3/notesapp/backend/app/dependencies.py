@@ -53,7 +53,10 @@ def get_current_user(credentials: BearerCreds, db: DbSession) -> User:
         raise AuthError("invalid or expired token") from exc
 
     user_id = payload.get("sub")
-    user = UserRepository(db).get(int(user_id)) if user_id is not None else None
+    try:
+        user = UserRepository(db).get(int(user_id)) if user_id is not None else None
+    except (ValueError, TypeError) as exc:
+        raise AuthError("invalid token claims") from exc
     if user is None:
         raise AuthError("user no longer exists")
     return user
