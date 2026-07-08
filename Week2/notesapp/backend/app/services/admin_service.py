@@ -18,6 +18,6 @@ class AdminService:
         return AdminStats(
             total_users=self._users.count(),
             users_logged_in=self._users.total_login_events(),
-            total_logins=self._users.total_logins(),
+            total_logins=self._users.cumulative_login_count(),
             total_notes=self._notes.count_all(),
         )

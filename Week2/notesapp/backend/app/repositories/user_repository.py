@@ -48,6 +48,6 @@ class UserRepository:
         stmt = select(func.count()).select_from(User).where(User.login_count > 0)
         return self._db.scalar(stmt) or 0
 
-    def total_logins(self) -> int:
+    def cumulative_login_count(self) -> int:
         """Sum of every user's login count — the total number of logins ever."""
         return self._db.scalar(select(func.coalesce(func.sum(User.login_count), 0))) or 0
