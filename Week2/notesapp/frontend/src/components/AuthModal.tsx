@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { ArrowRight, X } from 'lucide-react';
-import { PIN_LENGTH, PIN_REGEX, USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH, USERNAME_PATTERN } from '../constants';
+import {
+  PIN_LENGTH,
+  PIN_REGEX,
+  USERNAME_MIN_LENGTH,
+  USERNAME_MAX_LENGTH,
+  USERNAME_PATTERN,
+} from '../constants';
 import type { Credentials } from '../types';
 
 export type AuthMode = 'register' | 'login' | 'reset';
