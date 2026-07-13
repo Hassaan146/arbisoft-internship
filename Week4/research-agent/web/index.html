@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Agentika — AI Research Agent</title>
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -43,6 +44,9 @@
         color: var(--white);
         min-height: 100dvh;
         overflow: hidden;
+        /* dark backdrop behind the video: the loop-end fade dips into deep
+           green instead of flashing the white page background */
+        background: linear-gradient(180deg, #0b2a1e 0%, #04120d 100%);
       }
 
       /* ---- Video background (custom JS fade, no CSS transitions) ---- */

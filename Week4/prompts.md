@@ -77,3 +77,7 @@ All prompts given during Week 4 are recorded here. This file is updated on every
 > Component Structure: VideoBackground with custom fade logic; nav bar; hero content container; nested badge/header/search components; all over full-screen video
 >
 > this is the page, remove the attach voice and prompts option, remove the header/dashboard, just add the liveness of the website it moves through the mountains or the valleys, just just use the typing form the ui ux pro max skills, also remove this [credits bar / Powered by GPT-4o], on the top left instead of lorum ipsum write Agentika, also this should be single page, the replies must be below it or like u love it, like the chat gpt, it goes to the mid top right and the replies on the right, and use glass-morphism, the replies should also be by using the typing form the ui-ux skills, unique fonts and use colors like green and white to match the vibe, for the glass-morphism use a blurry thing not too glassy but it should look good, no extra thinks other than this in the front end, only one route, use prettier and linting if you think
+
+---
+
+> add the logo of agentika to icon.svg, why is this, correct this, the video is looping when the clip ends in the background there is a a whole whittish effect remove that commit and push, also update prompts.md

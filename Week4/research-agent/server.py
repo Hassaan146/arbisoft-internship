@@ -31,6 +31,11 @@ def index() -> FileResponse:
     return FileResponse(WEB_DIR / "index.html")
 
 
+@app.get("/icon.svg")
+def icon() -> FileResponse:
+    return FileResponse(WEB_DIR / "icon.svg", media_type="image/svg+xml")
+
+
 @app.post("/api/chat")
 def chat(req: ChatRequest) -> dict:
     message = req.message.strip()
