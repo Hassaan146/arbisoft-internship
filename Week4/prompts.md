@@ -33,3 +33,7 @@ All prompts given during Week 4 are recorded here. This file is updated on every
 ---
 
 > did u add linting config ruff in it ?
+
+---
+
+> add this in the promots.md and commit push
