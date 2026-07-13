@@ -21,3 +21,11 @@ All prompts given during Week 4 are recorded here. This file is updated on every
 > This is my week 4 tasks, I want to keep things simple but do all the things, provide a detail constructed plan and make a plan.md and make a progress.md as well, and push them to github, when i approve then we will start working on it
 
 *Follow-up review feedback on the first plan draft (summarized): memory oversimplified & modeled as tools instead of internal architecture; no tool-registry abstraction; hooks underutilized (should validate, time, collect metrics); logging lacked args/duration/status; weak error handling; no retry mechanism; search behavior underspecified (snippets vs page content); file-reader security gaps (path traversal, file types, size); multi-hop demo too search-only; no prompt-design documentation; no structured output schemas (Pydantic); config not centralized; no testing strategy; hardcoded step limit; limited extensibility; no justification for custom-vs-LangChain; no architecture diagram. → Plan revised to rev 2 addressing all points.*
+
+---
+
+> now start executing the plan, i will rotate the api keys laterly, keep them in .env
+> groq: [key shared privately — kept in .env, gitignored]
+> brave: the website is down so serp api, revise the plan.md and also write the reason
+> [serpapi key shared privately — kept in .env, gitignored]
+> start working and test it completely before providing me

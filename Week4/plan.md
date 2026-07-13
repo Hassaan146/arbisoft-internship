@@ -1,10 +1,12 @@
-# Week 4 — Research Agent: Plan (rev 2)
+# Week 4 — Research Agent: Plan (rev 3)
 
 ## Context
 
 Week 4 tasks (Arbisoft internship, repo `H:\Skills\Arbisoft`, branch `week-4`): build a research agent demonstrating the concepts from `Week4/ai-agents-concepts.md` — web-search skill, session memory, tool-call hooks, file-read plugin, multi-hop demo. Simple but complete, with production-minded structure.
 
-**Decisions:** LLM = **Groq free tier** (`llama-3.3-70b-versatile`, OpenAI-compatible function calling). Search = **Brave Search API** (free tier).
+**Decisions:** LLM = **Groq free tier** (`llama-3.3-70b-versatile`, OpenAI-compatible function calling). Search = **SerpAPI** (Google results, free tier 100 searches/mo).
+
+> **Rev 3 change — Brave → SerpAPI:** the plan originally chose Brave Search API, but the Brave API signup website was down when we tried to create a key (2026-07-13), so we switched to SerpAPI. The search tool is isolated in `tools/search.py` behind the same `SearchResult` schema, so swapping back to Brave later is a one-file change.
 
 **Rev 2** incorporates the user's review: proper memory subsystem (internal, not tools), tool registry, richer hooks + structured logging, error handling & retries, page-fetch fallback, file-reader hardening, Pydantic schemas, central config, unit tests, documented prompts, architecture diagram, and a written justification for not using LangChain.
 
@@ -53,12 +55,12 @@ Week4/research-agent/
 ├── hooks.py           # HookManager: logging, timing, validation, metrics
 ├── models.py          # Pydantic: tool inputs/outputs, ToolResult, Fact
 ├── tools/
-│   ├── search.py      # web_search + fetch_page (Brave + page retrieval)
+│   ├── search.py      # web_search + fetch_page (SerpAPI + page retrieval)
 │   └── files.py       # read_file (.txt/.pdf, hardened)
 ├── tests/             # pytest: registry, memory, files, hooks (APIs mocked)
 ├── docs/              # sample .txt/.pdf used by the demo
 ├── requirements.txt   # groq, pydantic, pypdf, httpx, beautifulsoup4, python-dotenv, pytest
-├── .env.example       # GROQ_API_KEY, BRAVE_API_KEY
+├── .env.example       # GROQ_API_KEY, SERPAPI_API_KEY
 └── README.md          # setup, usage, architecture, design decisions
 ```
 
@@ -91,11 +93,11 @@ Week4/research-agent/
 
 - **Config errors:** `config.py` validates required env vars at startup; missing key → clear one-line exit message ("GROQ_API_KEY missing — copy .env.example to .env").
 - **Tool errors:** every tool returns `ToolResult{ok, data, error}`; exceptions are caught in `dispatch`, logged via `on_tool_error`, and the error text is fed back to the model so it can adapt (retry, rephrase, different tool).
-- **Retries:** HTTP calls (Brave, page fetch, Groq) wrapped in a small `retry(fn, attempts=3, backoff=1s→2s→4s)` helper for timeouts/429/5xx only; non-retryable errors (401, bad input) fail immediately with a readable message.
+- **Retries:** HTTP calls (SerpAPI, page fetch, Groq) wrapped in a small `retry(fn, attempts=3, backoff=1s→2s→4s)` helper for timeouts/429/5xx only; non-retryable errors (401, bad input) fail immediately with a readable message.
 
 ### 8. Web search behavior (`tools/search.py`)
 
-- `web_search(query, count=5)` → Brave API → structured `SearchResult[]` (title, url, snippet).
+- `web_search(query, count=5)` → SerpAPI (Google engine) → structured `SearchResult[]` (title, url, snippet); Google answer-box included when present.
 - `fetch_page(url)` → retrieves full page when snippets are insufficient (httpx + BeautifulSoup text extraction, truncated to ~4,000 chars). The system prompt tells the model: *search first; fetch a page only if snippets don't answer the question.*
 
 ### 9. File reader hardening (`tools/files.py`)
@@ -157,4 +159,4 @@ The architecture + flow diagram above goes into `Week4/plan.md` and the README.
 - `python main.py` — chat; a fact question triggers `web_search`; `tool_calls.jsonl` shows args/duration/status.
 - `python main.py --demo` — full multi-hop narrative (file → memory → 2-hop search → memory-only summary) completes; metrics printed.
 - Negative paths: run without `.env` (clean error), ask it to read `../secret.txt` (blocked), kill network (retries then readable error).
-- User creates free keys: console.groq.com + brave.com/search/api.
+- User creates free keys: console.groq.com + serpapi.com (keys live only in `.env`, which is gitignored; user will rotate the keys shared during setup).
