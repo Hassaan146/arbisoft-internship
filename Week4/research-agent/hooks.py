@@ -13,24 +13,25 @@ Built-in hooks: sandbox validation (pre), JSONL logging (post/error), metrics
 
 import json
 from collections import defaultdict
-from datetime import datetime, timezone
-from typing import Any, Callable, Dict, List, Optional
+from collections.abc import Callable
+from datetime import UTC, datetime
+from typing import Any
 
 from config import settings
 from models import ToolResult
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="milliseconds")
+    return datetime.now(UTC).isoformat(timespec="milliseconds")
 
 
 class HookManager:
     def __init__(self) -> None:
-        self.pre_hooks: List[Callable] = []
-        self.post_hooks: List[Callable] = []
-        self.error_hooks: List[Callable] = []
+        self.pre_hooks: list[Callable] = []
+        self.post_hooks: list[Callable] = []
+        self.error_hooks: list[Callable] = []
 
-    def pre_tool_use(self, tool: str, args: Dict[str, Any]) -> Optional[str]:
+    def pre_tool_use(self, tool: str, args: dict[str, Any]) -> str | None:
         """Runs all pre-hooks; the first one returning a reason blocks the call."""
         for hook in self.pre_hooks:
             reason = hook(tool, args)
@@ -38,11 +39,11 @@ class HookManager:
                 return reason
         return None
 
-    def post_tool_use(self, tool: str, args: Dict[str, Any], result: ToolResult, duration_ms: float) -> None:
+    def post_tool_use(self, tool: str, args: dict[str, Any], result: ToolResult, duration_ms: float) -> None:
         for hook in self.post_hooks:
             hook(tool, args, result, duration_ms)
 
-    def on_tool_error(self, tool: str, args: Dict[str, Any], exc: Exception, duration_ms: float) -> None:
+    def on_tool_error(self, tool: str, args: dict[str, Any], exc: Exception, duration_ms: float) -> None:
         for hook in self.error_hooks:
             hook(tool, args, exc, duration_ms)
 
@@ -50,7 +51,7 @@ class HookManager:
 # ---- Built-in hook: sandbox validation (defense in depth; files.py also checks)
 
 
-def sandbox_pre_hook(tool: str, args: Dict[str, Any]) -> Optional[str]:
+def sandbox_pre_hook(tool: str, args: dict[str, Any]) -> str | None:
     if tool == "read_file":
         docs = settings.docs_dir.resolve()
         target = (docs / str(args.get("path", ""))).resolve()
@@ -62,12 +63,12 @@ def sandbox_pre_hook(tool: str, args: Dict[str, Any]) -> Optional[str]:
 # ---- Built-in hook: structured logging (JSONL + console echo) ---------------
 
 
-def _write_log(record: Dict[str, Any]) -> None:
+def _write_log(record: dict[str, Any]) -> None:
     with open(settings.log_path, "a", encoding="utf-8") as f:
         f.write(json.dumps(record, ensure_ascii=False, default=str) + "\n")
 
 
-def logging_post_hook(tool: str, args: Dict[str, Any], result: ToolResult, duration_ms: float) -> None:
+def logging_post_hook(tool: str, args: dict[str, Any], result: ToolResult, duration_ms: float) -> None:
     record = {
         "ts": _now_iso(),
         "tool": tool,
@@ -84,7 +85,7 @@ def logging_post_hook(tool: str, args: Dict[str, Any], result: ToolResult, durat
     print(f"  [hook] {record['ts']} {tool}({arg_str}) -> {record['status']} in {record['duration_ms']}ms")
 
 
-def logging_error_hook(tool: str, args: Dict[str, Any], exc: Exception, duration_ms: float) -> None:
+def logging_error_hook(tool: str, args: dict[str, Any], exc: Exception, duration_ms: float) -> None:
     record = {
         "ts": _now_iso(),
         "tool": tool,
@@ -102,17 +103,17 @@ def logging_error_hook(tool: str, args: Dict[str, Any], exc: Exception, duration
 
 class Metrics:
     def __init__(self) -> None:
-        self.calls: Dict[str, int] = defaultdict(int)
-        self.errors: Dict[str, int] = defaultdict(int)
-        self.total_ms: Dict[str, float] = defaultdict(float)
+        self.calls: dict[str, int] = defaultdict(int)
+        self.errors: dict[str, int] = defaultdict(int)
+        self.total_ms: dict[str, float] = defaultdict(float)
 
-    def post_hook(self, tool: str, args: Dict[str, Any], result: ToolResult, duration_ms: float) -> None:
+    def post_hook(self, tool: str, args: dict[str, Any], result: ToolResult, duration_ms: float) -> None:
         self.calls[tool] += 1
         self.total_ms[tool] += duration_ms
         if not result.ok:
             self.errors[tool] += 1
 
-    def error_hook(self, tool: str, args: Dict[str, Any], exc: Exception, duration_ms: float) -> None:
+    def error_hook(self, tool: str, args: dict[str, Any], exc: Exception, duration_ms: float) -> None:
         self.calls[tool] += 1
         self.errors[tool] += 1
         self.total_ms[tool] += duration_ms

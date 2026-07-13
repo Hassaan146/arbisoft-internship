@@ -5,3 +5,4 @@ httpx
 beautifulsoup4
 python-dotenv
 pytest
+ruff

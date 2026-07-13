@@ -9,7 +9,7 @@ come back as ToolResult with readable error text the LLM can act on.
 """
 
 import time
-from typing import Callable, Dict, List, Tuple, Type
+from collections.abc import Callable
 
 from pydantic import BaseModel, ValidationError
 
@@ -20,9 +20,9 @@ from models import ToolResult
 class ToolRegistry:
     def __init__(self, hooks: HookManager) -> None:
         self.hooks = hooks
-        self._tools: Dict[str, Tuple[Callable, Type[BaseModel], dict]] = {}
+        self._tools: dict[str, tuple[Callable, type[BaseModel], dict]] = {}
 
-    def register(self, input_model: Type[BaseModel], description: str, name: str = None):
+    def register(self, input_model: type[BaseModel], description: str, name: str = None):
         def decorator(fn: Callable) -> Callable:
             tool_name = name or fn.__name__
             schema = {
@@ -38,10 +38,10 @@ class ToolRegistry:
 
         return decorator
 
-    def schemas(self) -> List[dict]:
+    def schemas(self) -> list[dict]:
         return [schema for _, _, schema in self._tools.values()]
 
-    def names(self) -> List[str]:
+    def names(self) -> list[str]:
         return list(self._tools)
 
     def dispatch(self, name: str, raw_args) -> ToolResult:

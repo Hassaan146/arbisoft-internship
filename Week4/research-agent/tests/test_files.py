@@ -1,6 +1,6 @@
+from config import settings
 from models import ReadFileInput
 from tools.files import read_file
-from config import settings
 
 
 def setup_docs(tmp_path, monkeypatch):

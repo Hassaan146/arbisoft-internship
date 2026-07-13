@@ -54,8 +54,12 @@ def web_search(args: SearchQuery) -> ToolResult:
 
 def fetch_page(args: FetchPageInput) -> ToolResult:
     def call():
-        resp = httpx.get(args.url, timeout=20, follow_redirects=True,
-                         headers={"User-Agent": "Mozilla/5.0 (research-agent)"})
+        resp = httpx.get(
+            args.url,
+            timeout=20,
+            follow_redirects=True,
+            headers={"User-Agent": "Mozilla/5.0 (research-agent)"},
+        )
         resp.raise_for_status()
         return resp
 

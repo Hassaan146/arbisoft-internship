@@ -50,9 +50,7 @@ class Config:
             if not value
         ]
         if missing:
-            sys.exit(
-                f"Missing {', '.join(missing)} - copy .env.example to .env and fill in your keys."
-            )
+            sys.exit(f"Missing {', '.join(missing)} - copy .env.example to .env and fill in your keys.")
 
 
 settings = Config()

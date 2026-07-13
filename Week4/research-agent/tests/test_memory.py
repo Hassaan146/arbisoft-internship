@@ -45,9 +45,11 @@ def test_update_from_turn_uses_extractor_and_never_raises():
     memory = MemoryStore()
     memory.update_from_turn(1, "u", "a", lambda keys, u, a: [{"key": "k1", "value": "v1"}])
     assert memory.facts[0].value == "v1"
+
     # a broken extractor must not break the turn
     def broken(keys, u, a):
         raise RuntimeError("llm down")
+
     memory.update_from_turn(2, "u", "a", broken)
     assert len(memory.facts) == 1
 

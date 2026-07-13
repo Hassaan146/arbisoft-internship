@@ -14,16 +14,55 @@ and good enough for a single session's worth of facts.
 """
 
 import re
-from datetime import datetime, timezone
-from typing import Callable, Dict, List, Set
+from collections.abc import Callable
+from datetime import UTC, datetime
 
 from models import Fact
 
 _STOPWORDS = {
-    "a", "an", "the", "is", "are", "was", "were", "be", "been", "of", "in", "on",
-    "at", "to", "for", "and", "or", "it", "its", "this", "that", "what", "who",
-    "which", "how", "did", "do", "does", "from", "with", "about", "we", "i", "you",
-    "me", "my", "our", "their", "they", "he", "she", "his", "her",
+    "a",
+    "an",
+    "the",
+    "is",
+    "are",
+    "was",
+    "were",
+    "be",
+    "been",
+    "of",
+    "in",
+    "on",
+    "at",
+    "to",
+    "for",
+    "and",
+    "or",
+    "it",
+    "its",
+    "this",
+    "that",
+    "what",
+    "who",
+    "which",
+    "how",
+    "did",
+    "do",
+    "does",
+    "from",
+    "with",
+    "about",
+    "we",
+    "i",
+    "you",
+    "me",
+    "my",
+    "our",
+    "their",
+    "they",
+    "he",
+    "she",
+    "his",
+    "her",
 }
 
 
@@ -31,13 +70,13 @@ def _normalize_key(key: str) -> str:
     return re.sub(r"[^a-z0-9]+", "_", key.lower()).strip("_")
 
 
-def _tokens(text: str) -> Set[str]:
+def _tokens(text: str) -> set[str]:
     return {t for t in re.findall(r"[a-z0-9]+", text.lower()) if t not in _STOPWORDS}
 
 
 class MemoryStore:
     def __init__(self) -> None:
-        self._facts: Dict[str, Fact] = {}
+        self._facts: dict[str, Fact] = {}
 
     # ---- write path ---------------------------------------------------------
 
@@ -45,7 +84,7 @@ class MemoryStore:
         k = _normalize_key(key)
         if not k or not value:
             return
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         existing = self._facts.get(k)
         if existing:
             if existing.value != value:  # conflict: newest wins, history kept
@@ -67,7 +106,7 @@ class MemoryStore:
 
     # ---- read path ----------------------------------------------------------
 
-    def search(self, query: str, k: int) -> List[Fact]:
+    def search(self, query: str, k: int) -> list[Fact]:
         """Top-k facts by keyword overlap with the query; recency breaks ties.
         Zero-overlap facts still fill remaining slots (most recent first) so
         broad questions like 'summarize the session' see the memory too."""
@@ -87,5 +126,5 @@ class MemoryStore:
         return "Known facts from earlier in this session:\n" + "\n".join(lines)
 
     @property
-    def facts(self) -> List[Fact]:
+    def facts(self) -> list[Fact]:
         return list(self._facts.values())

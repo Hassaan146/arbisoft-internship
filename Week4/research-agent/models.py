@@ -6,10 +6,9 @@ how to call a tool.
 """
 
 from datetime import datetime
-from typing import Any, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
-
 
 # ---- Tool inputs -----------------------------------------------------------
 
@@ -44,7 +43,7 @@ class ToolResult(BaseModel):
 
     ok: bool
     data: Any = None
-    error: Optional[str] = None
+    error: str | None = None
 
     def to_model_text(self) -> str:
         return self.model_dump_json(exclude_none=True)
@@ -58,4 +57,4 @@ class Fact(BaseModel):
     value: str
     source_turn: int
     updated_at: datetime
-    history: List[str] = []  # previous values when a fact is updated (auditable)
+    history: list[str] = []  # previous values when a fact is updated (auditable)

@@ -18,6 +18,7 @@ Free keys: [console.groq.com](https://console.groq.com) and [serpapi.com](https:
 python main.py            # interactive chat
 python main.py --demo     # scripted multi-hop demo (file -> memory -> 2-hop search -> memory-only recall)
 pytest tests/ -q          # 27 unit tests, no API keys needed (APIs mocked / not called)
+ruff check . && ruff format --check .   # lint + formatting (config in pyproject.toml)
 ```
 
 ## Architecture

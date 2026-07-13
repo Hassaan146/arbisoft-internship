@@ -29,3 +29,7 @@ All prompts given during Week 4 are recorded here. This file is updated on every
 > brave: the website is down so serp api, revise the plan.md and also write the reason
 > [serpapi key shared privately — kept in .env, gitignored]
 > start working and test it completely before providing me
+
+---
+
+> did u add linting config ruff in it ?

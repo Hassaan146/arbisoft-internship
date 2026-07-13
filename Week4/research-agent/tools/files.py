@@ -6,8 +6,6 @@
 - PDF parse failures come back as readable ToolResult errors.
 """
 
-from pathlib import Path
-
 from pypdf import PdfReader
 
 from config import settings
@@ -24,15 +22,23 @@ def read_file(args: ReadFileInput) -> ToolResult:
         return ToolResult(ok=False, error=f"Access denied: '{args.path}' is outside the docs/ folder")
 
     if target.suffix.lower() not in ALLOWED_EXTENSIONS:
-        return ToolResult(ok=False, error=f"Unsupported file type '{target.suffix}' - only .txt and .pdf are allowed")
+        return ToolResult(
+            ok=False, error=f"Unsupported file type '{target.suffix}' - only .txt and .pdf are allowed"
+        )
 
     if not target.is_file():
-        available = sorted(f.name for f in docs.iterdir() if f.suffix.lower() in ALLOWED_EXTENSIONS) if docs.is_dir() else []
+        available = (
+            sorted(f.name for f in docs.iterdir() if f.suffix.lower() in ALLOWED_EXTENSIONS)
+            if docs.is_dir()
+            else []
+        )
         return ToolResult(ok=False, error=f"File '{args.path}' not found. Available files: {available}")
 
     size_mb = target.stat().st_size / (1024 * 1024)
     if size_mb > settings.file_max_mb:
-        return ToolResult(ok=False, error=f"File is {size_mb:.1f} MB, over the {settings.file_max_mb} MB limit")
+        return ToolResult(
+            ok=False, error=f"File is {size_mb:.1f} MB, over the {settings.file_max_mb} MB limit"
+        )
 
     if target.suffix.lower() == ".pdf":
         try:

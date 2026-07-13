@@ -106,11 +106,13 @@ class Agent:
                 messages.append(tool_msg)
 
         # Step budget exhausted: force a best-effort answer without tools
-        messages.append({
-            "role": "user",
-            "content": f"You have reached the tool-call limit ({settings.max_steps} steps). "
-                       "Give your best answer from what you have gathered, and say what is still unverified.",
-        })
+        messages.append(
+            {
+                "role": "user",
+                "content": f"You have reached the tool-call limit ({settings.max_steps} steps). "
+                "Give your best answer from what you have gathered, and say what is still unverified.",
+            }
+        )
         msg = self._chat(messages, use_tools=False).choices[0].message
         return self._finish(user_input, msg.content or "")
 
