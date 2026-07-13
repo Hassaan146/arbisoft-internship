@@ -81,3 +81,11 @@ All prompts given during Week 4 are recorded here. This file is updated on every
 ---
 
 > add the logo of agentika to icon.svg, why is this, correct this, the video is looping when the clip ends in the background there is a a whole whittish effect remove that commit and push, also update prompts.md
+
+---
+
+> are u using the professional git commit techniques?
+
+---
+
+> [screenshot: green outline box around the search input] correct this, and always use industry style commit techniques, ive always told u!, save this in memory for other sessions and new sessions
