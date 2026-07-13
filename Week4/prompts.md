@@ -89,3 +89,7 @@ All prompts given during Week 4 are recorded here. This file is updated on every
 ---
 
 > [screenshot: green outline box around the search input] correct this, and always use industry style commit techniques, ive always told u!, save this in memory for other sessions and new sessions
+
+---
+
+> [screenshot: composer overlapping hero subtitle] the writing box is overlapping the text written, move the background text a bit upwards so it should not overlap, do this and the same loop, commit push but professional commits pls
