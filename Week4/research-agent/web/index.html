@@ -211,6 +211,13 @@
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
       }
 
+      /* focus ring on the whole pill, not the inner input (no floating box) */
+      .input-row:focus-within {
+        box-shadow:
+          0 0 0 2px var(--green-bright),
+          0 4px 16px rgba(0, 0, 0, 0.12);
+      }
+
       #question {
         flex: 1;
         border: 0;
@@ -261,9 +268,13 @@
         cursor: default;
       }
 
-      #send:focus-visible,
+      #question:focus,
       #question:focus-visible {
-        outline: 2px solid var(--green-bright);
+        outline: none; /* ring is drawn by .input-row:focus-within instead */
+      }
+
+      #send:focus-visible {
+        outline: 2px solid var(--white);
         outline-offset: 2px;
       }
 
