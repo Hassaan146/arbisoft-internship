@@ -15,11 +15,22 @@ Free keys: [console.groq.com](https://console.groq.com) and [serpapi.com](https:
 ## Run
 
 ```bash
-python main.py            # interactive chat
+python main.py            # interactive chat (terminal)
 python main.py --demo     # scripted multi-hop demo (file -> memory -> 2-hop search -> memory-only recall)
+uvicorn server:app --port 8010   # Agentika web UI -> open http://localhost:8010
 pytest tests/ -q          # 27 unit tests, no API keys needed (APIs mocked / not called)
 ruff check . && ruff format --check .   # lint + formatting (config in pyproject.toml)
 ```
+
+## Web frontend (Agentika)
+
+Single-page glassmorphism chat UI (`web/index.html`, served by `server.py`):
+looping mountain-video background with a custom requestAnimationFrame fade
+system (250ms fade in/out around each loop, no CSS transitions on the video),
+hero that collapses into a ChatGPT-style thread on first message, typewriter
+reply animation with a 3-dot thinking indicator, green/white palette, Space
+Grotesk + DM Sans (ui-ux-pro-max pairing). One route only; the page and the
+CLI share the same agent internals — one server = one session memory.
 
 ## Architecture
 

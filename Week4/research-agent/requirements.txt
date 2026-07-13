@@ -4,5 +4,7 @@ pypdf
 httpx
 beautifulsoup4
 python-dotenv
+fastapi
+uvicorn
 pytest
 ruff

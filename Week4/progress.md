@@ -17,6 +17,11 @@ Status legend: ⬜ not started · 🔄 in progress · ✅ done
 - **Live demo (2026-07-13):** full 4-turn run succeeded — 6 facts auto-extracted into memory, turn 3 resolved "the company" from memory and did a 2-hop search (CEO → background), turn 4 summarized the session with zero tool calls. Metrics: read_file ×2, web_search ×2, 0 errors.
 - **Negative paths:** missing .env → clean one-line error; `../` traversal → blocked by policy hook; `.exe` → rejected; invalid tool args → readable validation error returned to the model; live fetch_page → ok.
 
+## Frontend (bonus)
+
+- **Agentika web UI** — single-page glassmorphism chat over a looping mountain-video background (custom rAF fade system per spec). FastAPI wrapper (`server.py`, `/api/chat`) + `web/index.html` (Space Grotesk/DM Sans from ui-ux-pro-max skill, green/white palette, typewriter replies, 3-dot typing indicator, ChatGPT-style hero→chat transition). One route, no nav/credits/attach clutter. Prettier-formatted, ruff clean.
+- Verified in browser: file-read turn, memory-resolved 2-hop web search turn ("that company" → Anthropic → CEO with source link), memory recall after page reload.
+
 ## Log
 
 - **2026-07-13** — Concepts doc (`ai-agents-concepts.md`) written; plan reviewed (18 feedback points) and revised to rev 2; plan.md + progress.md pushed.
