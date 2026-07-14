@@ -29,6 +29,9 @@ class Config:
 
     # Memory
     memory_top_k: int = field(default_factory=lambda: int(os.getenv("MEMORY_TOP_K", "5")))
+    # Max history messages sent per request - keeps long sessions under the
+    # free-tier context/TPM limits; older turns survive as memory facts.
+    history_max_messages: int = field(default_factory=lambda: int(os.getenv("HISTORY_MAX_MESSAGES", "30")))
 
     # Tools
     search_count: int = field(default_factory=lambda: int(os.getenv("SEARCH_COUNT", "5")))

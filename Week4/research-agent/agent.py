@@ -68,6 +68,18 @@ class Agent:
         )
         return json.loads(resp.choices[0].message.content).get("facts", [])
 
+    def _request_history(self) -> list:
+        """Cap what we send to the model so long sessions don't exceed the
+        provider's context/TPM limits; older turns still reach the model as
+        memory facts. The window is cut at a user-message boundary so no
+        dangling tool exchange is sent."""
+        if len(self.history) <= settings.history_max_messages:
+            return self.history
+        window = self.history[-settings.history_max_messages :]
+        while window and window[0].get("role") != "user":
+            window = window[1:]
+        return window
+
     # ---- the loop -------------------------------------------------------------
 
     def run_turn(self, user_input: str) -> str:
@@ -76,7 +88,7 @@ class Agent:
         system = SYSTEM_PROMPT + (f"\n\n{facts_block}" if facts_block else "")
 
         self.history.append({"role": "user", "content": user_input})
-        messages = [{"role": "system", "content": system}] + self.history
+        messages = [{"role": "system", "content": system}] + self._request_history()
 
         for _ in range(settings.max_steps):
             msg = self._chat(messages).choices[0].message
