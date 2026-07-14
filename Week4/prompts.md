@@ -93,3 +93,7 @@ All prompts given during Week 4 are recorded here. This file is updated on every
 ---
 
 > [screenshot: composer overlapping hero subtitle] the writing box is overlapping the text written, move the background text a bit upwards so it should not overlap, do this and the same loop, commit push but professional commits pls
+
+---
+
+> [screenshot: reply bubble showing "Something went wrong on the server: BadRequestError. Please try again."] how to deal with this, is this optimal? when something happens, then dont tell the user this, tell him that limit is hit, use typography and good colors so it should look good, commit push
