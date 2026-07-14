@@ -16,6 +16,7 @@
         --green: #059669;
         --green-bright: #10b981;
         --green-deep: #064e3b;
+        --amber: #fbbf24;
         --white: #ffffff;
         --ink: #0f172a;
         --glass-bg: rgba(255, 255, 255, 0.16);
@@ -363,6 +364,20 @@
         margin-bottom: 7px;
       }
 
+      /* error state: warm amber notice, distinct from normal replies */
+      .msg.agent.error {
+        background: rgba(59, 42, 10, 0.55);
+        border-left-color: var(--amber);
+      }
+
+      .msg.agent.error .who {
+        color: var(--amber);
+      }
+
+      .msg.agent.error .body {
+        color: rgba(255, 248, 235, 0.95);
+      }
+
       .msg.agent a {
         color: #6ee7b7;
         text-decoration: underline;
@@ -663,11 +678,19 @@
             '<div class="who">' +
             '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
             '<path d="M12 2l2.4 6.2L21 10l-6.6 1.8L12 18l-2.4-6.2L3 10l6.6-1.8z" /></svg>' +
-            "Agentika</div>" +
+            '<span class="who-label">Agentika</span></div>' +
             '<div class="body"><span class="dots" role="status" aria-label="Agentika is thinking"><span></span><span></span><span></span></span></div>';
           thread.appendChild(el);
           scrollToEnd();
-          return el.querySelector(".body");
+          return el;
+        }
+
+        function markAsError(bubble, title) {
+          bubble.classList.add("error");
+          bubble.querySelector(".who-label").textContent =
+            title || "Limit reached";
+          bubble.querySelector(".who svg").innerHTML =
+            '<path d="M12 3l10 18H2z" fill="currentColor"/><rect x="11" y="10" width="2" height="5" fill="#3b2a0a"/><rect x="11" y="17" width="2" height="2" fill="#3b2a0a"/>';
         }
 
         /* typewriter reveal for replies (instant when reduced motion is set) */
@@ -708,7 +731,8 @@
           input.disabled = true;
           document.body.classList.add("chat-mode");
           addUserMessage(question);
-          const body = addAgentShell();
+          const bubble = addAgentShell();
+          const body = bubble.querySelector(".body");
           try {
             const res = await fetch("/api/chat", {
               method: "POST",
@@ -717,13 +741,15 @@
             });
             if (!res.ok) throw new Error("HTTP " + res.status);
             const data = await res.json();
+            if (data.kind === "error") {
+              markAsError(bubble, data.title);
+            }
             typewrite(body, data.reply || "(empty reply)");
           } catch (err) {
+            markAsError(bubble, "Connection lost");
             typewrite(
               body,
-              "I could not reach the agent (" +
-                err.message +
-                "). Check that the server is running and try again.",
+              "Agentika could not be reached. Make sure the server is running, then ask again.",
             );
           } finally {
             busy = false;
