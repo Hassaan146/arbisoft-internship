@@ -21,8 +21,13 @@ Status legend: ⬜ not started · 🔄 in progress · ✅ done
 
 - **Agentika web UI** — single-page glassmorphism chat over a looping mountain-video background (custom rAF fade system per spec). FastAPI wrapper (`server.py`, `/api/chat`) + `web/index.html` (Space Grotesk/DM Sans from ui-ux-pro-max skill, green/white palette, typewriter replies, 3-dot typing indicator, ChatGPT-style hero→chat transition). One route, no nav/credits/attach clutter. Prettier-formatted, ruff clean.
 - Verified in browser: file-read turn, memory-resolved 2-hop web search turn ("that company" → Anthropic → CEO with source link), memory recall after page reload.
+- **Favicon** (`web/icon.svg`) + fix for white flash at video loop end (deep-green body backdrop behind the fading video).
+- **Focus-ring fix** — moved the input focus ring to the whole pill (`:focus-within`) instead of the inner input, which drew a floating green box.
+- **Hero/composer overlap fix** — hero text lifted above the composer (bottom padding + tightened mobile type scale); verified clearance at 1280×720 (77px) and 375×812 (108px).
+- **Resilient error handling** — request history capped (`HISTORY_MAX_MESSAGES`, default 30) so long sessions no longer hit the provider's context limit; server maps failures to friendly `{kind, title, reply}` messages (rate limit / session limit / connection / generic) and logs the real traceback server-side only; UI renders errors as amber-accented glass bubbles with a warning icon. No raw exception names reach the user.
 
 ## Log
 
 - **2026-07-13** — Concepts doc (`ai-agents-concepts.md`) written; plan reviewed (18 feedback points) and revised to rev 2; plan.md + progress.md pushed.
 - **2026-07-13** — Plan rev 3: Brave → SerpAPI (Brave signup site down). Full implementation of `research-agent/` (config, models, registry, hooks, memory, tools, agent, CLI, 27 tests, docs samples incl. generated PDF). Unit + live end-to-end testing passed. All 6 tasks complete.
+- **2026-07-13** — Agentika web frontend + ruff/prettier tooling. Polish pass: favicon, video loop-flash fix, focus-ring fix, hero/composer overlap fix, resilient error handling (history cap + friendly styled error bubbles). Switched to Conventional Commits for all commits (saved to memory).

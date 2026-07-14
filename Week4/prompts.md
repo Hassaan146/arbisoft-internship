@@ -97,3 +97,7 @@ All prompts given during Week 4 are recorded here. This file is updated on every
 ---
 
 > [screenshot: reply bubble showing "Something went wrong on the server: BadRequestError. Please try again."] how to deal with this, is this optimal? when something happens, then dont tell the user this, tell him that limit is hit, use typography and good colors so it should look good, commit push
+
+---
+
+> did u commit pushed it with professional commit and update prompts.md and progress.md? add this prompt too in the .md file
