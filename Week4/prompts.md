@@ -129,3 +129,7 @@ All prompts given during Week 4 are recorded here. This file is updated on every
 ---
 
 > the video is more like a static image, i said you for the video which was previously used, use the image and commit push to week 4 branch only
+
+---
+
+> remove em dashes from code and front end visuals as well and then commit push
