@@ -517,9 +517,51 @@ h3 {
 
 /* ---------- Reviews ---------- */
 .review {
+  position: relative; /* anchors the edit (pencil) button */
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+.review-edit-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  font-size: 0.9rem;
+  line-height: 1;
+  color: var(--ink-dim);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.review-edit-btn:hover,
+.review-edit-btn:focus-visible {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.review.is-editing form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.review-edit-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.review-edit-actions .btn {
+  flex: 1;
 }
 
 .review .stars {

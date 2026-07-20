@@ -1,0 +1,33 @@
+[project]
+name = "veldara-backend"
+version = "1.0.0"
+description = "Veldara Reviews CRUD API — FastAPI + Pydantic, JSON-file storage"
+requires-python = ">=3.11"
+
+# ---------------------------------------------------------------- Ruff ----
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["."]
+
+[tool.ruff.lint]
+select = [
+  "E",   # pycodestyle errors
+  "W",   # pycodestyle warnings
+  "F",   # pyflakes
+  "I",   # isort (import order)
+  "B",   # flake8-bugbear
+  "UP",  # pyupgrade
+  "SIM", # flake8-simplify
+  "C4",  # flake8-comprehensions
+  "RUF", # ruff-specific rules
+]
+
+[tool.ruff.lint.flake8-bugbear]
+# FastAPI's DI idiom puts Depends(...)/Query(...) in argument defaults.
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query"]
+
+# -------------------------------------------------------------- pytest ----
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

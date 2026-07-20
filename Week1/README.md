@@ -14,6 +14,8 @@ moving background.
 - **React Router v6** — client-side routing with a shared layout
 - **ESLint (flat config)** + **Prettier** — linting & formatting
 - **Vitest** + **Testing Library** — unit tests
+- **FastAPI + Pydantic** (`backend/`) — reviews CRUD API with layered
+  architecture, **Ruff** linting, and **pytest** tests
 
 ## Requirements covered
 
@@ -24,6 +26,7 @@ moving background.
 | ESLint + Prettier, clean lint pass     | `eslint.config.js`, `.prettierrc`                          |
 | 3+ unit tests                          | 17 tests across `ContactForm`, `ui`, `pages`, `App` suites |
 | Live background + Glassmorphism        | `VideoBackground.jsx` + `.glass` design system in `index.css` |
+| Reviews CRUD API (backend)             | `backend/` — FastAPI + Pydantic, Ruff, 26 pytest tests       |
 
 ### Routes
 
@@ -31,7 +34,9 @@ moving background.
   autoplaying flower video, a drifting particle field, scroll-revealed
   cards, and a final reveal — its own full-bleed layout
 - `/about` — How the project was made (glassmorphism)
-- `/reviews` — Website reviews (glassmorphism)
+- `/reviews` — Website reviews, loaded live from the backend API; anyone can
+  publish a review or edit any card via its pencil button (no auth by
+  design). Shows an availability notice if the API is down (glassmorphism)
 - `/contact` — Contact form with client-side validation (glassmorphism)
 - `*` — 404 fallback
 
@@ -41,23 +46,43 @@ moving background.
 src/
   components/  layout/  (Layout, Navbar)
                ui/      (GlassCard, PageHead, FeatureCard, Stars, SocialLinks)
-               VideoBackground.jsx  ContactForm.jsx  ErrorBoundary.jsx
+               VideoBackground.jsx  ContactForm.jsx  ReviewForm.jsx
+               ReviewCard.jsx  ErrorBoundary.jsx
   hooks/       useAutoplayVideo  useParticles  useHeroFade
-               useCardScrollMask  useScrollReveal
-  data/        about  reviews  contactPoints  landingCards
+               useCardScrollMask  useScrollReveal  useReviews
+  services/    reviewsApi.js  (all backend calls live here)
+  data/        about  contactPoints  landingCards
   pages/       Landing (+ Landing.css)  About  Reviews  Contact  NotFound
-  utils/       contactValidation.js
+  utils/       contactValidation.js  reviewValidation.js
   videoSource.js   index.css   App.jsx   main.jsx
+backend/
+  app/         FastAPI service: main (factory) → api/routes → services
+               → repositories, with Pydantic schemas and env-based config
+  tests/       pytest suite (API integration + repository unit tests)
+  data/        reviews.seed.json (empty; committed) → reviews.json (runtime)
 ```
 
-See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for a full conceptual walkthrough.
+See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for a full conceptual walkthrough
+and [`backend/README.md`](./backend/README.md) for the API reference.
 
 ## Getting started
 
 ```bash
 npm install      # install dependencies (the project's isolated environment)
-npm run dev      # start the dev server
+npm run dev      # start the dev server (proxies /api → localhost:8001)
 ```
+
+To run the reviews API alongside it:
+
+```powershell
+cd backend
+python -m venv .venv
+.venv\Scripts\pip install -r requirements.txt
+.venv\Scripts\python -m uvicorn app.main:app --reload --port 8001
+```
+
+All review data lives in the backend — there are no hard-coded reviews.
+Without the backend running, the Reviews page shows an availability notice.
 
 ## Scripts
 
@@ -70,6 +95,15 @@ npm run format       # Prettier write
 npm run format:check # Prettier check
 npm test             # run unit tests once
 npm run test:watch   # run tests in watch mode
+```
+
+Backend (from `backend/`, inside its venv):
+
+```bash
+python -m uvicorn app.main:app --reload --port 8001   # run the API
+python -m ruff check .                                # lint
+python -m ruff format .                               # format
+python -m pytest                                      # 26 backend tests
 ```
 
 ## Design techniques

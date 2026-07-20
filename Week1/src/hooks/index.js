@@ -4,3 +4,4 @@ export { useParticles } from './useParticles.js';
 export { useHeroFade } from './useHeroFade.js';
 export { useCardScrollMask } from './useCardScrollMask.js';
 export { useScrollReveal } from './useScrollReveal.js';
+export { useReviews } from './useReviews.js';

@@ -1,0 +1,11 @@
+# Runtime — pinned for reproducible installs
+fastapi==0.139.0
+uvicorn[standard]==0.50.2
+pydantic==2.13.4
+pydantic-settings==2.14.2
+slowapi==0.1.10
+
+# Development / quality
+ruff==0.15.20
+pytest==9.1.1
+httpx==0.28.1
