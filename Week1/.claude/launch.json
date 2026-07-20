@@ -2,10 +2,24 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "nebula-dev",
+      "name": "frontend",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "port": 5173
+      "runtimeArgs": ["run", "dev", "--", "--port", "5174"],
+      "port": 5174
+    },
+    {
+      "name": "backend",
+      "runtimeExecutable": "backend/.venv/Scripts/python.exe",
+      "runtimeArgs": [
+        "-m",
+        "uvicorn",
+        "app.main:app",
+        "--app-dir",
+        "backend",
+        "--port",
+        "8001"
+      ],
+      "port": 8001
     }
   ]
 }

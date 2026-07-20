@@ -1,17 +1,19 @@
 import { useState } from 'react';
-import { ArrowLeft, NotebookPen, Pencil, Trash2 } from 'lucide-react';
+import { LayoutDashboard, LogOut, NotebookPen, Pencil, Trash2 } from 'lucide-react';
 import BackgroundVideo from '../components/BackgroundVideo';
 import NoteEditor from '../components/NoteEditor';
 import { useNotes } from '../hooks/useNotes';
-import type { Note, NoteInput } from '../types';
+import type { Note, NoteInput, User } from '../types';
 
 interface NotesPageProps {
-  onBack: () => void;
+  user: User;
+  onLogout: () => void;
+  onOpenAdmin?: () => void;
 }
 
-// The notes workspace. Same cinematic video + liquid-glass vibe as the
+// The logged-in workspace. Same cinematic video + liquid-glass vibe as the
 // landing page, with a darker overlay so the note text stays readable.
-export default function NotesPage({ onBack }: NotesPageProps) {
+export default function NotesPage({ user, onLogout, onOpenAdmin }: NotesPageProps) {
   const { notes, loading, error, createNote, updateNote, deleteNote } = useNotes();
   const [editing, setEditing] = useState<Note | null>(null);
   const [busy, setBusy] = useState(false);
@@ -61,12 +63,24 @@ export default function NotesPage({ onBack }: NotesPageProps) {
             <span className="text-lg font-semibold text-white">Notes</span>
           </div>
           <div className="flex items-center gap-4">
+            <span className="text-sm text-white/70">
+              Hi, <span className="text-white">{user.username}</span>
+            </span>
+            {user.role === 'admin' && onOpenAdmin && (
+              <button
+                type="button"
+                onClick={onOpenAdmin}
+                className="liquid-glass flex items-center gap-2 rounded-full px-4 py-2 text-sm text-white"
+              >
+                <LayoutDashboard size={16} /> Admin
+              </button>
+            )}
             <button
               type="button"
-              onClick={onBack}
+              onClick={onLogout}
               className="liquid-glass flex items-center gap-2 rounded-full px-4 py-2 text-sm text-white"
             >
-              <ArrowLeft size={16} /> Home
+              <LogOut size={16} /> Logout
             </button>
           </div>
         </header>

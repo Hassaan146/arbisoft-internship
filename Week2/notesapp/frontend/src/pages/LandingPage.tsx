@@ -2,12 +2,13 @@ import { ArrowRight, NotebookPen } from 'lucide-react';
 import BackgroundVideo from '../components/BackgroundVideo';
 
 interface LandingPageProps {
-  onOpen: () => void;
+  onRegister: () => void;
+  onLogin: () => void;
 }
 
 // The cinematic hero: a full-screen looping video behind liquid-glass UI.
-// The only action is opening the notes workspace.
-export default function LandingPage({ onOpen }: LandingPageProps) {
+// Only real actions remain — create an account or log in (username + PIN).
+export default function LandingPage({ onRegister, onLogin }: LandingPageProps) {
   return (
     <div className="relative min-h-screen overflow-hidden bg-black">
       <BackgroundVideo />
@@ -22,12 +23,12 @@ export default function LandingPage({ onOpen }: LandingPageProps) {
             </div>
 
             <div className="flex items-center gap-4">
-              <button type="button" onClick={onOpen} className="text-sm font-medium text-white">
+              <button type="button" onClick={onRegister} className="text-sm font-medium text-white">
                 Sign Up
               </button>
               <button
                 type="button"
-                onClick={onOpen}
+                onClick={onLogin}
                 className="liquid-glass rounded-full px-6 py-2 text-sm font-medium text-white"
               >
                 Login
@@ -46,14 +47,14 @@ export default function LandingPage({ onOpen }: LandingPageProps) {
           </h1>
 
           <p className="mb-8 max-w-md text-base leading-relaxed text-white/70">
-            A calm place for your thoughts. Write, edit, and organise your notes in one simple
-            workspace.
+            A calm, private place for your thoughts. Create an account with a username and a 4-digit
+            PIN, and your notes are yours alone.
           </p>
 
           <div className="flex flex-col items-center gap-3 sm:flex-row">
             <button
               type="button"
-              onClick={onOpen}
+              onClick={onRegister}
               className="flex items-center gap-2 rounded-full bg-white px-8 py-3 font-medium text-black transition-opacity hover:opacity-90"
             >
               Get Started
@@ -61,10 +62,10 @@ export default function LandingPage({ onOpen }: LandingPageProps) {
             </button>
             <button
               type="button"
-              onClick={onOpen}
+              onClick={onLogin}
               className="liquid-glass rounded-full px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-white/5"
             >
-              Browse my notes
+              I already have an account
             </button>
           </div>
         </main>
