@@ -1,0 +1,21 @@
+[project]
+name = "notesapp-backend"
+version = "1.0.0"
+description = "CRUD REST API for a Notes app (FastAPI + SQLAlchemy)."
+requires-python = ">=3.11"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["app", "tests"]
+
+[tool.ruff.lint]
+# E/W pycodestyle, F pyflakes, I isort, B bugbear, UP pyupgrade, N pep8-naming
+select = ["E", "W", "F", "I", "B", "UP", "N"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B008"]  # FastAPI-style Depends() defaults are fine in tests
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
