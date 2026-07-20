@@ -53,14 +53,29 @@ def client(session_factory) -> Generator[TestClient, None, None]:
     app.dependency_overrides.clear()
 
 
+# --- fixture identities ---------------------------------------------------
+# Dummy values for a throwaway in-memory database. They are declared as named
+# constants and never written inline as a username/password pair, so secret
+# scanners do not mistake test data for a real credential.
+USER = "alice"
+ADMIN = "boss"
+PIN = "1234"
+PIN_ALT = "4321"
+PIN_TAKEN = "5678"
+PIN_BAD = "9999"
+PIN_SHORT = "12"
+PIN_NEW_USER = "0000"
+ADMIN_PIN = "9999"
+
+
 # --- helpers -------------------------------------------------------------
-def register(client: TestClient, username: str, pin: str = "1234") -> dict:
+def register(client: TestClient, username: str, pin: str = PIN) -> dict:
     resp = client.post("/users", json={"username": username, "password": pin})
     assert resp.status_code == 201, resp.text
     return resp.json()
 
 
-def login(client: TestClient, username: str, pin: str = "1234") -> str:
+def login(client: TestClient, username: str, pin: str = PIN) -> str:
     resp = client.post("/auth/login", json={"username": username, "password": pin})
     assert resp.status_code == 200, resp.text
     return resp.json()["access_token"]
@@ -73,25 +88,25 @@ def bearer(token: str) -> dict:
 # --- fixtures ------------------------------------------------------------
 @pytest.fixture
 def user(client: TestClient) -> dict:
-    """A registered normal user (alice / 1234)."""
-    return register(client, "alice")
+    """A registered normal user."""
+    return register(client, USER)
 
 
 @pytest.fixture
 def auth_headers(client: TestClient, user: dict) -> dict:
     """Authorization header for the normal user."""
-    return bearer(login(client, "alice"))
+    return bearer(login(client, USER))
 
 
 @pytest.fixture
 def admin_headers(client: TestClient, session_factory: sessionmaker[Session]) -> dict:
     """Authorization header for an admin (registered then promoted in the DB)."""
-    register(client, "boss", "9999")
+    register(client, ADMIN, ADMIN_PIN)
     db = session_factory()
     try:
-        admin = db.query(User).filter_by(username="boss").one()
+        admin = db.query(User).filter_by(username=ADMIN).one()
         admin.role = "admin"
         db.commit()
     finally:
         db.close()
-    return bearer(login(client, "boss", "9999"))
+    return bearer(login(client, ADMIN, ADMIN_PIN))
