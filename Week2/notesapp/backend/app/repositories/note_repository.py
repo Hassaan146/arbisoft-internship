@@ -7,22 +7,29 @@ from app.models import Note
 
 
 class NoteRepository:
-    """Query/persist Notes. All SQL for notes lives here."""
+    """Query/persist Notes. Ownership filtering is expressed here."""
 
     def __init__(self, db: Session) -> None:
         self._db = db
 
     def get(self, note_id: int) -> Note | None:
-        """Fetch a note by primary key, or None."""
+        """Fetch a note by primary key, or None. Ownership is checked in the
+        service layer, not here."""
         return self._db.get(Note, note_id)
 
-    def list_all(self, limit: int, offset: int) -> list[Note]:
-        """Return one page of notes, newest-edited first.
+    def list_for_user(self, owner_id: int, limit: int, offset: int) -> list[Note]:
+        """Return one page of a user's notes, newest-edited first.
 
         limit/offset are applied in SQL so the database does the paging rather
         than loading every row into memory.
         """
-        stmt = select(Note).order_by(Note.updated_at.desc()).limit(limit).offset(offset)
+        stmt = (
+            select(Note)
+            .where(Note.owner_id == owner_id)
+            .order_by(Note.updated_at.desc())
+            .limit(limit)
+            .offset(offset)
+        )
         return list(self._db.scalars(stmt))
 
     def add(self, note: Note) -> Note:
@@ -36,5 +43,5 @@ class NoteRepository:
         self._db.delete(note)
 
     def count_all(self) -> int:
-        """Total number of notes."""
+        """Total number of notes across all users (admin stat, no contents)."""
         return self._db.scalar(select(func.count()).select_from(Note)) or 0

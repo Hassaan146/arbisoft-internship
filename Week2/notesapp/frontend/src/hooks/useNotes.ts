@@ -3,7 +3,8 @@ import { api } from '../services/api';
 import type { Note, NoteInput } from '../types';
 
 // Encapsulates note data-fetching + mutations and the async UI states
-// (loading / error).
+// (loading / error). Notes belong to whoever the JWT identifies, so no user
+// id is passed — the server derives it from the token.
 export function useNotes() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);

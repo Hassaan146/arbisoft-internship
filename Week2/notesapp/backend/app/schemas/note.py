@@ -27,7 +27,7 @@ class NoteBase(BaseModel):
 
 
 class NoteCreate(NoteBase):
-    """Request body for creating a note."""
+    """Request body for creating a note (the owner comes from the JWT)."""
 
 
 class NoteUpdate(BaseModel):
@@ -62,5 +62,6 @@ class NoteRead(NoteBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    owner_id: int
     created_at: datetime
     updated_at: datetime

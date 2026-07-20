@@ -16,18 +16,30 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
 from app.config import get_settings
-from app.database import Base, engine
+from app.database import Base, SessionLocal, engine
 from app.exceptions import (
+    AuthError,
     ConflictError,
+    ForbiddenError,
     NotFoundError,
     ValidationError,
 )
 from app.logging_config import configure_logging
 from app.rate_limit import limiter
-from app.routers import notes
+from app.routers import admin, auth, notes, users
+from app.services import UserService
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
+
+
+def _seed_admin() -> None:
+    """Ensure the configured admin account exists (idempotent)."""
+    db = SessionLocal()
+    try:
+        UserService(db).ensure_admin(settings.admin_username, settings.admin_pin)
+    finally:
+        db.close()
 
 
 def create_app() -> FastAPI:
@@ -51,7 +63,10 @@ def create_app() -> FastAPI:
     _register_exception_handlers(app)
     _register_security_headers(app)
 
+    app.include_router(auth.router)
+    app.include_router(users.router)
     app.include_router(notes.router)
+    app.include_router(admin.router)
 
     @app.get("/health", tags=["meta"])
     def health() -> dict[str, str]:
@@ -59,6 +74,7 @@ def create_app() -> FastAPI:
 
     # Dev convenience: create tables on startup. Use migrations in production.
     Base.metadata.create_all(bind=engine)
+    _seed_admin()
     return app
 
 
@@ -72,6 +88,14 @@ def _register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(ConflictError)
     async def _conflict(_: Request, exc: ConflictError) -> JSONResponse:
         return JSONResponse(status_code=status.HTTP_409_CONFLICT, content={"detail": str(exc)})
+
+    @app.exception_handler(AuthError)
+    async def _auth(_: Request, exc: AuthError) -> JSONResponse:
+        return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED, content={"detail": str(exc)})
+
+    @app.exception_handler(ForbiddenError)
+    async def _forbidden(_: Request, exc: ForbiddenError) -> JSONResponse:
+        return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content={"detail": str(exc)})
 
     @app.exception_handler(ValidationError)
     async def _validation(_: Request, exc: ValidationError) -> JSONResponse:
