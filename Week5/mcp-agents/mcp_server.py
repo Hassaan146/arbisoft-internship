@@ -50,7 +50,7 @@ def _seed_memory_from_docs() -> None:
 _seed_memory_from_docs()
 
 
-@mcp.resource("memory://facts")
+@mcp.resource("memory://facts", mime_type="application/json")
 def memory_facts() -> str:
     """The research agent's current session-memory facts as a JSON object
     (``{key: value}``), seeded from its documents and updated as the agent
