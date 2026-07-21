@@ -43,6 +43,11 @@ WORKER_ROLES: dict[str, str] = {
     "librarian": "reads local documents in the docs/ folder",
 }
 
+# The two dicts are the single source of truth for "who the workers are" — keep
+# them in lock-step so the router never advertises a worker that isn't built.
+if set(WORKER_ROLES) != set(WORKER_TOOLS):
+    raise RuntimeError("WORKER_ROLES and WORKER_TOOLS must define the same worker names")
+
 
 def build_worker(name: str, hooks: ra.HookManager, client=None) -> ra.Agent:
     """Build one worker: a research-agent Agent whose registry exposes only that

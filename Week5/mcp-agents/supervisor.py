@@ -46,19 +46,21 @@ class Supervisor:
     # ---- plan -------------------------------------------------------------
 
     def _plan(self, request: str) -> list[dict]:
-        resp = self._client.chat.completions.create(
-            model=ra.settings.model,
-            response_format={"type": "json_object"},
-            temperature=0.0,
-            max_tokens=ra.settings.planner_max_tokens,
-            messages=[
-                {"role": "system", "content": ROUTER_PROMPT},
-                {"role": "user", "content": request},
-            ],
-        )
         try:
+            resp = self._client.chat.completions.create(
+                model=ra.settings.model,
+                response_format={"type": "json_object"},
+                temperature=0.0,
+                max_tokens=ra.settings.planner_max_tokens,
+                messages=[
+                    {"role": "system", "content": ROUTER_PROMPT},
+                    {"role": "user", "content": request},
+                ],
+            )
             plan = json.loads(resp.choices[0].message.content).get("plan", [])
-        except (json.JSONDecodeError, TypeError, AttributeError):
+        except Exception:
+            # Planning is best-effort: any failure (API error or bad JSON) falls
+            # back to an empty plan -> the "no suitable worker" response.
             return []
         # Keep only steps that name a real worker (validate the LLM's routing).
         return [s for s in plan if isinstance(s, dict) and s.get("worker") in self.workers and s.get("task")]
@@ -100,10 +102,20 @@ class Supervisor:
         if not plan:
             return {"answer": "No suitable worker could handle this request.", "plan": [], "results": []}
 
-        results = [(step["worker"], step["task"], self._run_worker(step["worker"], step["task"])) for step in plan]
+        results = [
+            (step["worker"], step["task"], self._run_worker(step["worker"], step["task"])) for step in plan
+        ]
 
         # One worker -> return its answer directly (skip a needless integration call).
-        answer = results[0][2] if len(results) == 1 else self._integrate(request, results)
+        if len(results) == 1:
+            answer = results[0][2]
+        else:
+            try:
+                answer = self._integrate(request, results)
+            except Exception:
+                # Integration failed after the workers already did their (paid)
+                # work; don't discard it — return the combined worker results.
+                answer = "\n\n".join(f"[{worker}] {ans}" for worker, _task, ans in results)
         return {
             "answer": answer,
             "plan": plan,
