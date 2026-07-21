@@ -154,3 +154,46 @@ def test_planning_api_failure_returns_no_worker_message():
     sup.workers = {"researcher": FakeWorker(), "librarian": FakeWorker()}
     out = sup.handle("anything")
     assert out["plan"] == [] and "No suitable worker" in out["answer"]
+
+
+class _FlakyWorker:
+    """Raises tool_use_failed for the first `fail_times` calls, then succeeds."""
+
+    def __init__(self, fail_times: int):
+        self.fail_times = fail_times
+        self.calls = 0
+
+    def run_turn(self, task: str) -> str:
+        self.calls += 1
+        if self.calls <= self.fail_times:
+            raise RuntimeError("Error code: 400 - tool_use_failed: malformed function call")
+        return f"ok:{task}"
+
+
+def test_worker_retried_on_tool_use_failed_then_succeeds():
+    sup = _supervisor([{"worker": "researcher", "task": "search"}])
+    sup._worker_retries = 2  # pin, independent of the env
+    flaky = _FlakyWorker(fail_times=2)  # fails twice, succeeds on the 3rd attempt
+    sup.workers["researcher"] = flaky
+    out = sup.handle("go")
+    assert flaky.calls == 3  # 1 initial + 2 retries
+    assert out["results"][0]["answer"] == "ok:search"
+
+
+def test_worker_not_retried_on_non_tool_use_failed_error():
+    class _AlwaysBoom:
+        def __init__(self):
+            self.calls = 0
+
+        def run_turn(self, task: str) -> str:
+            self.calls += 1
+            raise RuntimeError("a genuine worker bug")
+
+    sup = _supervisor([{"worker": "researcher", "task": "search"}])
+    sup._worker_retries = 2
+    boom = _AlwaysBoom()
+    sup.workers["researcher"] = boom
+    out = sup.handle("go")
+    assert boom.calls == 1  # not retried (error is not tool_use_failed)
+    assert "could not complete" in out["results"][0]["answer"]
+    assert "a genuine worker bug" in out["results"][0]["answer"]

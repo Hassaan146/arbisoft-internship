@@ -46,7 +46,8 @@ class Supervisor:
         self.workers = build_all_workers(self.hooks, client=worker_client)
         # Groq's llama model intermittently emits a malformed tool call
         # (tool_use_failed); a bounded retry of the delegation recovers it.
-        self._worker_retries = int(os.getenv("WORKER_RETRIES", "2"))
+        # Clamp to >= 0 so a stray negative env value can't skip the worker entirely.
+        self._worker_retries = max(0, int(os.getenv("WORKER_RETRIES", "2")))
 
     # ---- plan -------------------------------------------------------------
 
@@ -113,32 +114,38 @@ class Supervisor:
     def handle(self, request: str) -> dict:
         """Route the request through the workers. Returns {answer, plan, results, trace_id}."""
         trace_id = tracing.start_trace()  # one trace per top-level request
-        plan = self._plan(request)
-        if not plan:
+        try:
+            plan = self._plan(request)
+            if not plan:
+                return {
+                    "answer": "No suitable worker could handle this request.",
+                    "plan": [],
+                    "results": [],
+                    "trace_id": trace_id,
+                }
+
+            results = [
+                (step["worker"], step["task"], self._run_worker(step["worker"], step["task"]))
+                for step in plan
+            ]
+
+            # One worker -> return its answer directly (skip a needless integration call).
+            if len(results) == 1:
+                answer = results[0][2]
+            else:
+                try:
+                    answer = self._integrate(request, results)
+                except Exception:
+                    # Integration failed after the workers already did their (paid)
+                    # work; don't discard it — return the combined worker results.
+                    answer = "\n\n".join(f"[{worker}] {ans}" for worker, _task, ans in results)
             return {
-                "answer": "No suitable worker could handle this request.",
-                "plan": [],
-                "results": [],
+                "answer": answer,
+                "plan": plan,
+                "results": [{"worker": w, "task": t, "answer": a} for w, t, a in results],
                 "trace_id": trace_id,
             }
-
-        results = [
-            (step["worker"], step["task"], self._run_worker(step["worker"], step["task"])) for step in plan
-        ]
-
-        # One worker -> return its answer directly (skip a needless integration call).
-        if len(results) == 1:
-            answer = results[0][2]
-        else:
-            try:
-                answer = self._integrate(request, results)
-            except Exception:
-                # Integration failed after the workers already did their (paid)
-                # work; don't discard it — return the combined worker results.
-                answer = "\n\n".join(f"[{worker}] {ans}" for worker, _task, ans in results)
-        return {
-            "answer": answer,
-            "plan": plan,
-            "results": [{"worker": w, "task": t, "answer": a} for w, t, a in results],
-            "trace_id": trace_id,
-        }
+        finally:
+            # Clear per-request trace context so trace_id doesn't leak into the
+            # next request and _seq can't grow unbounded in a long-lived process.
+            tracing.end_trace()

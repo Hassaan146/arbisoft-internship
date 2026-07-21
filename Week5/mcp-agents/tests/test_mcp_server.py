@@ -84,3 +84,20 @@ def test_web_search_tool_dispatches_to_research_agent_search(monkeypatch):
     assert captured["query"] == "who founded anthropic"  # the model's arg reached the real tool
     assert payload["ok"] is True
     assert payload["data"][0]["title"] == "T"
+
+
+def test_web_search_tool_surfaces_error_result(monkeypatch):
+    def failing_search(args: ra.SearchQuery) -> ra.ToolResult:
+        return ra.ToolResult(ok=False, error="search backend down")
+
+    monkeypatch.setattr(ra, "ra_web_search", failing_search)
+
+    async def go():
+        async with connect(mcp_server.mcp._mcp_server) as client:
+            return await client.call_tool("web_search", {"query": "x"})
+
+    result = _run(go())
+    payload = json.loads(result.content[0].text)
+    # a tool failure is surfaced as machine-readable JSON, not an exception
+    assert payload["ok"] is False
+    assert "search backend down" in payload["error"]

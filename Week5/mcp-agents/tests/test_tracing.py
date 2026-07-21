@@ -123,3 +123,17 @@ def test_render_trace_shows_agents_and_tools(monkeypatch, tmp_path):
     assert "agent: librarian" in rendered
     assert "agent: researcher" in rendered
     assert "echo(" in rendered
+
+
+def test_trace_write_failure_does_not_break_dispatch(monkeypatch, tmp_path):
+    # Point the trace at a path whose parent is a FILE, so mkdir + open fail —
+    # the tool call must still succeed (tracing never breaks a dispatch).
+    blocker = tmp_path / "iam_a_file"
+    blocker.write_text("not a directory")
+    monkeypatch.setenv("MCP_TRACE_PATH", str(blocker / "trace.jsonl"))
+    registry = _traced_registry()
+    tracing.start_trace()
+    with tracing.use_agent("worker"):
+        result = registry.dispatch("echo", '{"text": "hi"}')
+    assert result.ok is True and result.data == "hi"  # dispatch unaffected
+    assert tracing.load_trace() == []  # span was dropped, not persisted

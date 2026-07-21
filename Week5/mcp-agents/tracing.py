@@ -26,6 +26,7 @@ Boundaries (documented, not bugs):
 
 import contextvars
 import json
+import logging
 import os
 import threading
 import time
@@ -36,12 +37,15 @@ from pathlib import Path
 
 import ra_bridge as ra
 
+_log = logging.getLogger(__name__)
+
 _trace_id: contextvars.ContextVar[str | None] = contextvars.ContextVar("trace_id", default=None)
 _agent: contextvars.ContextVar[str] = contextvars.ContextVar("agent", default="root")
 
 _DEFAULT_PATH = Path(__file__).resolve().parent / "agent_trace.jsonl"
 _seq_lock = threading.Lock()
 _seq: dict[str, int] = defaultdict(int)  # trace_id -> monotonically increasing span number
+_warned_write_failure = False  # so a persistently bad path warns once, not per call
 
 
 def trace_path() -> Path:
@@ -113,8 +117,13 @@ def _record(tool: str, args: dict, status: str, duration_ms: float, error: str |
             f.write(json.dumps(record, ensure_ascii=False, default=str) + "\n")
     except Exception:
         # Tracing must NEVER break a tool call: a bad MCP_TRACE_PATH or an I/O
-        # error silently drops the span instead of propagating out of dispatch.
-        pass
+        # error drops the span instead of propagating out of dispatch. Surface
+        # the misconfiguration once (not per call) so it's diagnosable.
+        global _warned_write_failure
+        if not _warned_write_failure:
+            _warned_write_failure = True
+            _log.warning("tracing: could not write span to %s (further failures suppressed)",
+                         trace_path(), exc_info=True)
 
 
 def _safe_args(raw_args) -> dict:
