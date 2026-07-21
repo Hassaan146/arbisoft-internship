@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "agentika-research": {
+      "command": "Week5/mcp-agents/.venv/Scripts/python.exe",
+      "args": ["Week5/mcp-agents/mcp_server.py"]
+    }
+  }
+}

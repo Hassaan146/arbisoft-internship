@@ -1,0 +1,5 @@
+# Week 5 dependencies: the MCP SDK plus everything Week4/research-agent needs
+# (reused in-process via ra_bridge). Kept DRY by referencing the research-agent
+# pinned set rather than duplicating versions.
+-r ../../Week4/research-agent/requirements.txt
+mcp==1.28.1
