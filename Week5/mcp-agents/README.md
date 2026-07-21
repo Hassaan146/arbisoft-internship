@@ -31,6 +31,29 @@ python -m venv .venv
 .venv/Scripts/python -m pytest tests/ -q   # unit tests (no keys needed; fakes/mocks)
 ```
 
-Claude Code picks up the server from the repo-root `.mcp.json` (see Task 2).
+## Connecting to Claude Code (Task 2)
+
+The repo-root [`.mcp.json`](../../.mcp.json) registers the server so Claude Code
+auto-discovers it when the **repository root** is opened as the workspace:
+
+```json
+{
+  "mcpServers": {
+    "agentika-research": {
+      "command": "Week5/mcp-agents/.venv/Scripts/python.exe",
+      "args": ["Week5/mcp-agents/mcp_server.py"]
+    }
+  }
+}
+```
+
+Paths are **relative to the repo root** — no hardcoded machine paths. Open the
+repo root as the Claude Code workspace, then `claude mcp list` shows
+`agentika-research`, and the `web_search` tool + `memory://facts` resource become
+available in chat.
+
+- macOS/Linux: the interpreter is `.venv/bin/python` (not `.venv/Scripts/python.exe`).
+- Alternative (registers a path without committing one):
+  `claude mcp add agentika-research -- <python> Week5/mcp-agents/mcp_server.py`.
 
 See [`CODE_EXPLAINED.md`](CODE_EXPLAINED.md) for a full why/what/how walkthrough.
