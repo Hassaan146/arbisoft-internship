@@ -8,6 +8,7 @@ tracing hook (Task 4) sees every tool call across every worker.
 """
 
 import ra_bridge as ra
+import tracing
 
 # tool name -> (Pydantic input model, LLM-facing description, implementation).
 # The functions are the research-agent's real tools (reused, not reimplemented).
@@ -54,7 +55,8 @@ def build_worker(name: str, hooks: ra.HookManager, client=None) -> ra.Agent:
     role's tools, wired to the shared ``hooks`` (so tracing/metrics see it)."""
     if name not in WORKER_TOOLS:
         raise ValueError(f"unknown worker '{name}'. Known: {list(WORKER_TOOLS)}")
-    registry = ra.ToolRegistry(hooks)
+    # TracingRegistry records every dispatch this worker makes into the active trace.
+    registry = tracing.TracingRegistry(hooks)
     for tool_name in WORKER_TOOLS[name]:
         input_model, description, fn = _TOOL_SPECS[tool_name]
         registry.register(input_model, description)(fn)  # tool name = fn.__name__
