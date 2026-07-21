@@ -11,6 +11,7 @@ worker roles are declared once in ``workers.py``.
 """
 
 import json
+import os
 
 from groq import Groq
 
@@ -43,6 +44,9 @@ class Supervisor:
         self.hooks = hooks if hooks is not None else ra.HookManager()
         self._client = client if client is not None else Groq(api_key=ra.settings.groq_api_key)
         self.workers = build_all_workers(self.hooks, client=worker_client)
+        # Groq's llama model intermittently emits a malformed tool call
+        # (tool_use_failed); a bounded retry of the delegation recovers it.
+        self._worker_retries = int(os.getenv("WORKER_RETRIES", "2"))
 
     # ---- plan -------------------------------------------------------------
 
@@ -75,11 +79,19 @@ class Supervisor:
         crash the whole graph: it becomes a readable error the supervisor can
         still integrate around — the same "errors as observations" rule the
         research-agent uses for tools."""
-        try:
-            with tracing.use_agent(name):  # attribute this worker's tool calls in the trace
-                return self.workers[name].run_turn(task)
-        except Exception as exc:
-            return f"[worker '{name}' could not complete this subtask: {type(exc).__name__}: {exc}]"
+        last_exc: Exception | None = None
+        for attempt in range(self._worker_retries + 1):
+            try:
+                with tracing.use_agent(name):  # attribute this worker's tool calls in the trace
+                    return self.workers[name].run_turn(task)
+            except Exception as exc:
+                last_exc = exc
+                # Retry only the transient malformed-tool-call error; anything
+                # else fails fast (no point re-running a real bug).
+                if attempt < self._worker_retries and "tool_use_failed" in str(exc).lower():
+                    continue
+                break
+        return f"[worker '{name}' could not complete this subtask: {type(last_exc).__name__}: {last_exc}]"
 
     # ---- integrate --------------------------------------------------------
 
