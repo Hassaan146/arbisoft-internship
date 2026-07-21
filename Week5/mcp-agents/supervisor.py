@@ -15,6 +15,7 @@ import json
 from groq import Groq
 
 import ra_bridge as ra
+import tracing
 from workers import WORKER_ROLES, build_all_workers
 
 
@@ -75,7 +76,8 @@ class Supervisor:
         still integrate around — the same "errors as observations" rule the
         research-agent uses for tools."""
         try:
-            return self.workers[name].run_turn(task)
+            with tracing.use_agent(name):  # attribute this worker's tool calls in the trace
+                return self.workers[name].run_turn(task)
         except Exception as exc:
             return f"[worker '{name}' could not complete this subtask: {type(exc).__name__}: {exc}]"
 
@@ -97,10 +99,16 @@ class Supervisor:
     # ---- orchestrate ------------------------------------------------------
 
     def handle(self, request: str) -> dict:
-        """Route the request through the workers. Returns {answer, plan, results}."""
+        """Route the request through the workers. Returns {answer, plan, results, trace_id}."""
+        trace_id = tracing.start_trace()  # one trace per top-level request
         plan = self._plan(request)
         if not plan:
-            return {"answer": "No suitable worker could handle this request.", "plan": [], "results": []}
+            return {
+                "answer": "No suitable worker could handle this request.",
+                "plan": [],
+                "results": [],
+                "trace_id": trace_id,
+            }
 
         results = [
             (step["worker"], step["task"], self._run_worker(step["worker"], step["task"])) for step in plan
@@ -120,4 +128,5 @@ class Supervisor:
             "answer": answer,
             "plan": plan,
             "results": [{"worker": w, "task": t, "answer": a} for w, t, a in results],
+            "trace_id": trace_id,
         }
