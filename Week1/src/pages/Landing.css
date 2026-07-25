@@ -1,0 +1,361 @@
+/* ============================================================
+   Veldara-style scroll-video landing — scoped under .veldara-page
+   so none of these rules leak into the rest of the app.
+   ============================================================ */
+
+.veldara-page {
+  background: #010101;
+  color: #fff;
+  min-height: 100vh;
+}
+
+/* Scroll Video */
+.veldara-page #scroll-video-container {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  background: #0a0a0a;
+  top: -20%;
+}
+.veldara-page #scroll-video-container canvas,
+.veldara-page #scroll-video-container video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.veldara-page #scroll-video-container .overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Tap-to-play fallback (only shown if the browser blocks muted autoplay) */
+.veldara-page .bg-play-btn {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #fff;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.veldara-page .bg-play-btn:hover {
+  background: rgba(44, 92, 136, 0.85);
+}
+
+/* Particles */
+.veldara-page #particles-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Nav */
+.veldara-page .veldara-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 2.5rem;
+}
+.veldara-page .veldara-nav .logo {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #fff;
+  letter-spacing: -0.025em;
+}
+.veldara-page .veldara-nav .nav-group {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+.veldara-page .veldara-nav .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.veldara-page .veldara-nav .nav-links a {
+  font-size: 0.875rem;
+  color: #d1d5db;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.veldara-page .veldara-nav .nav-links a:hover {
+  color: #fff;
+}
+.veldara-page .veldara-nav .social {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.veldara-page .veldara-nav .social a {
+  color: #d1d5db;
+  transition: color 0.2s;
+}
+.veldara-page .veldara-nav .social a:hover {
+  color: #fff;
+}
+.veldara-page .veldara-nav .social svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Hero */
+.veldara-page #hero {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.veldara-page #hero .gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.6),
+    transparent,
+    transparent
+  );
+}
+.veldara-page #hero .content {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  text-align: center;
+  padding: 0 1.5rem 6rem;
+}
+.veldara-page #hero .subtitle {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  margin-bottom: 1rem;
+  letter-spacing: 0.05em;
+}
+.veldara-page #hero h1 {
+  font-size: clamp(1.5rem, 5vw, 3.75rem);
+  font-weight: 600;
+  line-height: 1.15;
+  max-width: 48rem;
+}
+.veldara-page #hero h1 .underlined {
+  position: relative;
+  display: inline-block;
+}
+.veldara-page #hero h1 .underlined .line {
+  position: absolute;
+  bottom: 0.25rem;
+  left: 0;
+  width: 100%;
+  height: 10px;
+  background: #2c5c88;
+  border-radius: 2px;
+}
+.veldara-page #hero h1 .underlined span {
+  position: relative;
+}
+.veldara-page #hero .ctas {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.veldara-page #hero .code-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #1a1a1a;
+  border: 1px solid rgba(55, 65, 81, 0.5);
+  border-radius: 0.5rem;
+  padding: 0.875rem 2rem;
+}
+.veldara-page #hero .code-box .prompt {
+  color: #2c5c88;
+  font-family: monospace;
+  font-size: 0.875rem;
+}
+.veldara-page #hero .code-box code {
+  font-size: 0.875rem;
+  color: #e5e7eb;
+  font-family: monospace;
+}
+.veldara-page #hero .cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #2c5c88;
+  color: #fff;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  padding: 0.875rem 2rem;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.veldara-page #hero .cta-btn:hover {
+  background: #3a7aad;
+}
+.veldara-page #hero .bounce-arrow {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 2rem;
+}
+.veldara-page #hero .bounce-arrow svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #6b7280;
+  animation: veldara-bounce 1s infinite;
+}
+
+@keyframes veldara-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-25%);
+  }
+}
+
+/* Cards */
+.veldara-page #fixed-cards {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 4;
+  padding: 2rem 2.5rem;
+  opacity: 0;
+  pointer-events: none;
+}
+.veldara-page #fixed-cards .grid {
+  max-width: 72rem;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5rem;
+}
+.veldara-page #fixed-cards .card h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+.veldara-page #fixed-cards .card p {
+  color: #d1d5db;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* Section 3 */
+.veldara-page #section-three {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 2.5rem 8rem;
+}
+.veldara-page #section-three .inner {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(32px);
+  filter: blur(8px);
+  transition:
+    opacity 1s ease-out,
+    transform 1s ease-out,
+    filter 1s ease-out;
+}
+.veldara-page #section-three .inner.visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+.veldara-page #section-three .inner p {
+  color: #d1d5db;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+.veldara-page #section-three .inner h2 {
+  font-size: clamp(1.875rem, 6vw, 4.5rem);
+  font-weight: 700;
+}
+
+/* Content wrapper */
+.veldara-page #content {
+  position: relative;
+  z-index: 2;
+}
+
+/* Scroll spacers that pace the hero -> cards -> reveal choreography */
+.veldara-page .spacer-lg {
+  height: 150vh;
+}
+.veldara-page .spacer-md {
+  height: 100vh;
+}
+.veldara-page #cards-trigger {
+  height: 200vh;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .veldara-page .veldara-nav {
+    padding: 1rem 1.5rem;
+  }
+  .veldara-page .veldara-nav .nav-links {
+    display: none;
+  }
+  .veldara-page #hero .content {
+    padding-bottom: 5rem;
+  }
+  .veldara-page #hero h1 {
+    font-size: 1.5rem;
+  }
+  .veldara-page #hero .ctas {
+    flex-direction: column;
+  }
+  .veldara-page #fixed-cards .grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .veldara-page #fixed-cards {
+    padding: 1.5rem 1rem;
+  }
+  .veldara-page #section-three {
+    padding-bottom: 5rem;
+  }
+}
